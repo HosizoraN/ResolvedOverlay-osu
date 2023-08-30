@@ -121,13 +121,13 @@ async function setupRankingPanel() {
 
     scoreResult.innerHTML = numberWithCommas(tempScore);
     accResult.innerHTML = tempAcc.toFixed(2) + '%';
-    comboResult.innerHTML = tempCombo + 'x';
+    comboResult.innerHTML = tempMaxCombo + 'x';
 
     URResult.innerHTML = tempURIndex.toFixed(2) + 'UR';
-    r300.innerHTML = temp300;
     r100.innerHTML = temp100;
     r50.innerHTML = temp50;
     r0.innerHTML = temp0;
+    rsb.innerHTML = tempsliderBreaks;
     ppResult.innerHTML = tempPP + 'pp';
 
     resultRecorder.style.transform = 'none';
