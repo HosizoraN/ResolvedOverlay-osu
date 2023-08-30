@@ -31,7 +31,7 @@ html {
 }
 
 #main {
-	font-size: 30px;
+	font-size: 20px;
 	font-family: GothicRD;
 	font-weight: normal;
 	color: white;
@@ -89,7 +89,6 @@ html {
 	margin-right: auto;
 	width: 90px;
 	height: 90px;
-	box-shadow: 0 5px 5px black;
 	transition: ease-in-out 500ms;
 	background-size: 100%;
 	background-position: 50% 50%;
@@ -114,26 +113,29 @@ html {
 	text-align: center;
 	transition: ease-in-out 500ms;
 	/* box-shadow: 0 5px 5px black; */
-	text-shadow: 0 3px 10px black;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
 #username {
-	left: 640px;
+	top: 30px;
+	left: 655px;
 }
 
 #playerPP {
-	right: 640px;
+	top: 30px;
+	right: 655px;
 }
 
 .lightTick {
 	position: absolute;
-	top: 85px;
+	top: 30px;
 	width: 230px;
+	height: 35px;
 	padding: 5px;
 	background-color: #161616;
 	border-radius: 10px;
+	z-index: -1;
 	transition: ease-in-out 500ms;
 	/* box-shadow: 0 5px 5px black; */
 }
@@ -148,11 +150,13 @@ html {
 }
 
 #globalContainer {
-	right: 185px;
+	right: 700px;
+	top: 75px;
 }
 
 #countryContainer {
-	left: 185px;
+	left: 700px;
+	top: 75px;
 }
 
 .rankContainer {
@@ -176,22 +180,24 @@ html {
 }
 
 #ranks {
-	right: 0;
+	right: 0px;
+	top: 5px;
 }
 
 #countryRank {
-	left: 0;
+	left: 0px;
+	top: 5px;
 }
 
 .flag {
 	position: absolute;
-	bottom: -25px;
+	bottom: -30px;
 	left: 0;
 	right: 0;
 	margin-left: auto;
 	margin-right: auto;
 	width: 35px;
-	height: 23px;
+	height: 25px;
 	background-color: #161616;
 	background-position: center;
 	background-size: 100%;
@@ -210,6 +216,7 @@ html {
 	position: absolute;
 	width: 1920px;
 	height: 100px;
+	display: none;
 	left: 0;
 	right: 0;
 	margin-left: auto;
@@ -225,6 +232,7 @@ html {
 	position: absolute;
 	width: 1920px;
 	height: 100px;
+	display: none;
 	left: 0;
 	right: 0;
 	margin-left: auto;
@@ -241,14 +249,13 @@ html {
 	padding: 5px 0px 5px 0px;
 	text-align: center;
 	border-radius: 10px;
-	top: 20px;
+	top: 30px;
 	width: 220px;
 	/* box-shadow: 0 5px 9px black; */
 	font-family: Torus;
 	font-weight: 900;
 	font-size: 25px;
 	transition: ease-in-out 500ms;
-	text-shadow: 0 3px 10px black;
 	/* background-color: #161616; */
 	color: white;
 }
@@ -264,4 +271,53 @@ html {
 	font-size: 20px;
 	text-shadow: 0 5px 5px rgba(0, 0, 0, 1);
 	overflow: hidden;
+}
+#smallStats{
+	width: 330px;
+	height: 55px;
+	font-size: 25px;
+	border-radius: 10px;
+	position: absolute;
+	bottom: 120px;
+	left: 15px;
+	background-color: #161616;
+	border-radius: 10px;
+	transition: ease-in-out 500ms;
+	z-index: -1;
+}
+#stars1 {
+	position: absolute;
+	left: 15px;
+	top: 12px;
+}
+#bpmd{
+	position: absolute;
+	text-align: right;
+	right: 20px;
+	top: 12px;
+}
+#strainGraph {
+	position: absolute;
+	height: 120px;
+	left: 8px;
+	top: -120px;
+	transition: ease 500ms;
+	z-index: -1;
+	border-top-left-radius: 30px;
+	border-top-right-radius: 30px;
+}
+
+#progress {
+	bottom: 0px;
+	position: absolute;
+	width: 500px;
+	height: 120px;
+	overflow: hidden;
+	transition: ease 100ms;
+}
+#canvas,
+#canvasSecond {
+	position: absolute;
+	height: 120px;
+	bottom: 0px;
 }

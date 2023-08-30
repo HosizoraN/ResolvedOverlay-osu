@@ -33,29 +33,12 @@
 	font-weight: 900;
 	line-height: 25px;
 	font-family: Torus;
-
 	display: flex;
 	justify-content: space-between;
 	align-content: space-between;
 	flex-wrap: wrap;
 
 	filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0));
-}
-
-.playerContainer::after {
-	position: absolute;
-	content: "";
-	top: 0;
-	bottom: 0;
-	margin-top: auto;
-	margin-bottom: auto;
-	height: 50px;
-	width: 8px;
-	right: -4px;
-	border-radius: 3px;
-	background-color: #de3950;
-	box-shadow: 0 0 10px 2px #de3950;
-	transition: ease-in-out 500ms;
 }
 
 .ourplayerContainer {
@@ -90,8 +73,8 @@
 	width: 8px;
 	right: -4px;
 	border-radius: 3px;
-	background-color: goldenrod;
-	box-shadow: 0 0 10px 2px goldenrod;
+	background-color: rgb(191, 255, 255);
+	box-shadow: 0 0 10px 2px rgb(191, 255, 255);
 	transition: ease-in-out 500ms;
 }
 

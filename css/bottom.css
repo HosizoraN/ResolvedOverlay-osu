@@ -42,12 +42,12 @@
 }
 
 #nowPlayingContainer {
+	display: none;
 	position: absolute;
 	font-family: Torus;
 	font-weight: 900;
-	margin: 20px;
-	right: 0;
-	bottom: 70px;
+	right: 5px;
+	bottom: 85px;
 	width: 450px;
 	height: 90px;
 	text-align: center;
@@ -95,74 +95,39 @@
 	text-align: center;
 	bottom: 20px;
 }
-
-#strainGraph {
-	position: absolute;
-    right: 470px;
-	bottom: 170px;
-	height: 70px;
-	transition: ease 500ms;
-	z-index: -1;
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-}
-
-#progress {
-	bottom: 0px;
-	position: absolute;
-	width: 450px;
-	height: 90px;
-	overflow: hidden;
-	transition: ease 100ms;
-}
-
-#canvas,
-#canvasSecond {
-	position: absolute;
-	height: 90px;
-	bottom: 0px;
-}
-
 #combo {
     position: absolute;
-	padding: 10px 0px 10px 0px;
+	padding: 10px 10px 10px 10px;
 	text-align: center;
-	/* border-radius: 30px;
-    border-style: solid;
-    border-width: 8px;
-    border-color: #15151e; */
-	bottom: 20px;
-	width: 150px;
-	color: white;
-	font-size: 25px;
+	margin: auto;
+	border-radius: 10px;
+	bottom: 10px;
+	width: auto;
+	font-size: 30px;
 	transition: ease-in-out 500ms;
 	z-index: 0;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
-	left: 580px;
+	right: 1120px;
+	text-shadow: 0 1px 3px black;
 }
-
 #pp {
     position: absolute;
-	padding: 10px 0px 10px 0px;
+	padding: 10px 10px 10px 10px;
+	margin: auto;
 	text-align: center;
-	/* border-radius: 30px;
-    border-style: solid;
-    border-width: 8px;
-    border-color: #15151e; */
-	bottom: 20px;
-	width: 150px;
-	color: white;
-	font-size: 25px;
+	border-radius: 10px;
+	bottom: 10px;
+	width: auto;
+	font-size: 30px;
 	transition: ease-in-out 500ms;
 	z-index: 0;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
-	right: 580px;
+	left: 1120px;
+	text-shadow: 0 1px 3px black;
 }
 
 #accInfo {
@@ -172,8 +137,8 @@
 	padding: 5px 0px 5px 0px;
 	border-radius: 20px;
 	border-color: #161616;
+	right:5px;
 	bottom: 10px;
-	right: 20px;
 	width: 300px;
 	height: 30px;
 	background-color: #161616;
@@ -183,7 +148,8 @@
 
 #h100,
 #h50,
-#h0 {
+#h0,
+#hsb {
 	font-family: GothicR;
 	font-size: 18px;
 	line-height: 30px;
@@ -201,12 +167,40 @@
 	color: #de3950;
 }
 
+#hsb {
+	color: #32bce9;
+}
+
+#URmidbar{
+	position: absolute;
+	left: 148px;
+	background-color: white;
+	width: 5px;
+	height: 37px;
+	top: -13px;
+	border-radius: 5px;
+	transition: ease-out 500ms;
+}
+
+#avgHitError {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	top: 10px;
+	left: 147.5px;
+	background-image: url("../static/arrowtick.png");
+	background-size: 100%;
+	transition: ease-out 100ms;
+	transform-origin: 50% 50%;
+	-webkit-filter: drop-shadow(5px 5px 5px #222222);
+	filter: drop-shadow(5px 5px 5px #222222);
+}
 #URbar {
 	position: absolute;
 	left: 810px;
 	bottom: 20px;
 	width: 300px;
-	height: 7.5px;
+	height: 10px;
 	background-color: #daae46;
 	border-radius: 5px;
 	box-shadow: 0 0 9px black;
@@ -217,7 +211,7 @@
 	position: absolute;
 	width: 20px;
 	height: 20px;
-	top: -20px;
+	top: 14px;
 	left: 140px;
 	background-image: url("../static/arrowtick.png");
 	background-size: 100%;
@@ -229,7 +223,7 @@
 
 #l100 {
 	position: absolute;
-	height: 7.5px;
+	height: 10px;
 	width: 209.8px;
 	left: 45.1px;
 	background-color: #57e313;
@@ -238,7 +232,7 @@
 
 #l300 {
 	position: absolute;
-	height: 7.5px;
+	height: 10px;
 	width: 119.5px;
 	left: 90.25px;
 	background-color: #32bce9;
@@ -247,10 +241,10 @@
 
 .tick {
 	position: absolute;
-	top: 15px;
-	height: 10px;
-	width: 4px;
-	background-color: rgba(255 255 255 / .6);
+	top: -10px;
+	height: 30px;
+	width: 7px;
+	background-color: rgba(255 255 255 / .3);
 	left: 147.5px;
 	border-radius: 3px;
 	transition: ease-out 500ms;
@@ -258,21 +252,30 @@
 
 #URIndex {
 	position: absolute;
-	bottom: 50px;
+	bottom: 65px;
 	margin-left: auto;
 	margin-right: auto;
 	left: 0;
 	right: 0;
-	width: 100px;
-	font-size: 20px;
+	font-size: 35px;
 	display: block;
 	font-weight: bold;
 	text-align: center;
 	padding: 5px 0px 5px 0px;
 	color: #fff;
-	background-color: #161616;
-	box-shadow: 0 5px 9px rgba(0 0 0 / 0.6);
-	border-radius: 25px;
+	transition: ease-in-out 500ms;
+}
+#URText{
+	position: absolute;
+	bottom: 40px;
+	left: 0;
+	right: 0;
+	font-size: 23px;
+	display: block;
+	font-weight: lighter;
+	text-align: center;
+	padding: 5px 0px 5px 0px;
+	color: #fff;
 	transition: ease-in-out 500ms;
 }
 
@@ -287,39 +290,18 @@
 	right: 50px;
 	transition: ease-in-out 500ms;
 }
-
 .bottomBar {
     position: absolute;
     bottom: 0px;
     width: 400px;
-	height: 67px;
+	height: auto;
     border-radius: 10px;
-    background-color: #15151e;
-	mask-size: 100%;
-	mask-repeat: no-repeat;
-	mask-position: center;
-	-webkit-mask-size: 100%;
-	-webkit-mask-repeat: no-repeat;
-	-webkit-mask-position: center;
+    background-color: #000000;
 }
-
-#comboBar {
-    left: var(--bottom-bar-distance);
-	mask-image: url('../static/bottombar1.png');
-	-webkit-mask-image: url('../static/bottombar1.png');
-}
-
-#ppBar {
-    right: var(--bottom-bar-distance);
-	mask-image: url('../static/bottombar2.png');
-	-webkit-mask-image: url('../static/bottombar2.png');
-}
-
 #recorderContainer {
 	position: absolute;
 	left: -600px;
 	bottom: 5px;
-	display: flex;
 	flex-wrap: wrap;
 	align-content: center;
 	width: 500px;
@@ -329,6 +311,7 @@
 }
 
 #recorder {
+	display: hidden;
 	width: 100%;
 	height: 50px;
 	color: white;
@@ -340,6 +323,7 @@
 }
 
 #recorderName {
+	display: hidden;
 	width: 100%;
 	height: 50px;
 	color: white;

@@ -38,6 +38,7 @@ let mapTitle = document.getElementById("mapTitle");
 let mapDesc = document.getElementById("mapDesc");
 let stars = document.getElementById("stars");
 let starsCurrent = document.getElementById("starsCurrent");
+let BPM = document.getElementById("BPM");
 let overlay = document.getElementById("overlay");
 
 // PLAYING SCORE
@@ -53,6 +54,7 @@ let accInfo = document.getElementById("accInfo");
 let h100 = document.getElementById("h100");
 let h50 = document.getElementById("h50");
 let h0 = document.getElementById("h0");
+let hsliderBreaks = document.getElementById("hsb");
 
 // PERFORMANCE POINTS
 let pp = document.getElementById("pp");
@@ -121,6 +123,7 @@ let r300 = document.getElementById("r300");
 let r100 = document.getElementById("r100");
 let r50 = document.getElementById("r50");
 let r0 = document.getElementById("r0");
+let rsliderBreaks = document.getElementById("rsb");
 
 let ppResult = document.getElementById("ppResult");
 
@@ -158,8 +161,7 @@ let animation = {
         useGrouping: true,
         separator: " ",
         decimal: ".",
-        prefix: "Now: ",
-        suffix: "*",
+        suffix: " ",
     }),
     stars: new CountUp("stars", 0, 0, 2, 0.2, {
         useEasing: true,
@@ -169,8 +171,7 @@ let animation = {
         prefix: "Full: ",
         suffix: "*",
     }),
-};
-
+}
 socket.onclose = (event) => {
     console.log("Socket Closed Connection: ", event);
     socket.send("Client Closed!");
@@ -194,6 +195,7 @@ let temp300;
 let temp100;
 let temp50;
 let temp0;
+let tempsliderBreaks;
 let tempGrade;
 
 let tempPP;
@@ -216,6 +218,7 @@ let tempTimeCurrent;
 let tempTimeFull;
 let tempFirstObj;
 let tempTimeMP3;
+let tempStarsCurrent
 
 let tempStrainBase;
 let smoothOffset = 2;
@@ -223,6 +226,7 @@ let seek;
 let fullTime;
 
 let tempHitErrorArrayLength;
+let tempBPM;
 let OD = 0;
 let tickPos;
 let fullPos;
@@ -280,7 +284,6 @@ socket.onmessage = (event) => {
         username.innerHTML = tempUsername;
         setupUser(tempUsername);
     }
-
     if (tempImg !== data.menu.bm.path.full) {
         tempImg = data.menu.bm.path.full;
         data.menu.bm.path.full = data.menu.bm.path.full.replace(/#/g, "%23").replace(/%/g, "%25").replace(/\\/g, "/").replace(/'/g, "%27");
@@ -299,6 +302,7 @@ socket.onmessage = (event) => {
         if (gameState !== 2) {
             if (gameState !== 7) deRankingPanel();
             upperPart.style.transform = "translateY(-200px)";
+            smallStats.style.transform = "translateX(-400px)";
 
             tickPos = 0;
             tempAvg = 0;
@@ -328,6 +332,7 @@ socket.onmessage = (event) => {
             deRankingPanel();
             upperPart.style.transform = "none";
             bottom.style.transform = "none";
+            smallStats.style.transform = "none";
             document.getElementById("modContainer").style.transform = "none";
         }
     }
@@ -369,12 +374,10 @@ socket.onmessage = (event) => {
             "Star Rating: " +
             tempSR +
             "*";
-    }
-
+       }
     if (tempGrade !== data.gameplay.hits.grade.current) {
         tempGrade = data.gameplay.hits.grade.current;
     }
-
     if (data.gameplay.score == 0) {
     }
 
@@ -392,6 +395,10 @@ socket.onmessage = (event) => {
         acc.innerHTML = tempAcc;
         animation.acc.update(acc.innerHTML);
     }
+    if (tempBPM !== data.menu.bm.stats.BPM.max) {
+        tempBPM = data.menu.bm.stats.BPM.max;
+        BPM.innerHTML = tempBPM;
+    }
 
     if (fullTime !== data.menu.bm.time.mp3) {
         fullTime = data.menu.bm.time.mp3;
@@ -402,10 +409,8 @@ socket.onmessage = (event) => {
         tempLink = JSON.stringify(data.menu.pp.strains);
         if (data.menu.pp.strains) smoothed = smooth(data.menu.pp.strains, smoothOffset);
         config.data.datasets[0].data = smoothed;
-        config.data.datasets[0].backgroundColor = `rgba(${colorGet.r}, ${colorGet.g}, ${colorGet.b}, 0.2)`;
         config.data.labels = smoothed;
         configSecond.data.datasets[0].data = smoothed;
-        configSecond.data.datasets[0].backgroundColor = `rgba(${colorGet.r}, ${colorGet.g}, ${colorGet.b}, 0.7)`;
         configSecond.data.labels = smoothed;
         if (window.myLine && window.myLineSecond) {
             window.myLine.update();
@@ -414,15 +419,17 @@ socket.onmessage = (event) => {
     }
     if (seek !== data.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
         seek = data.menu.bm.time.current;
-        progressChart.style.width = onepart * seek + "px";
+        progressChart.style.width = onepart * seek + 'px';
     }
     if (tempMods !== data.menu.mods.str) {
         document.getElementById("modContainer").innerHTML = "";
 
         tempMods = data.menu.mods.str;
 
-        if (tempMods.search("HD") !== -1) isHidden = true;
-        else isHidden = false;
+        if (tempMods.search("HD") !== -1) 
+            isHidden = true;
+        else
+            isHidden = false;
 
         let modsCount = tempMods.length;
 
@@ -459,6 +466,7 @@ socket.onmessage = (event) => {
         combo.innerHTML = tempCombo;
         animation.combo.update(combo.innerHTML);
     }
+
 
     if (data.gameplay.hits.hitErrorArray !== null) {
         tempSmooth = smooth(data.gameplay.hits.hitErrorArray, 4);
@@ -514,18 +522,26 @@ socket.onmessage = (event) => {
         temp0 = data.gameplay.hits[0];
         h0.innerHTML = temp0;
     }
+    if (tempsliderBreaks !== data.gameplay.hits.sliderBreaks) {
+        tempsliderBreaks = data.gameplay.hits.sliderBreaks;
+        hsb.innerHTML = tempsliderBreaks;
+    }
     if (tempPP !== data.gameplay.pp.current) {
         tempPP = data.gameplay.pp.current;
         pp.innerHTML = tempPP;
     }
-
+    if (tempStarsCurrent !== data.menu.bm.stats.SR) {
+        tempStarsCurrent = data.menu.bm.stats.SR;
+        starsCurrent.innerHTML = tempStarsCurrent;
+        animation.starsCurrent.update(starsCurrent.innerHTML);
+    }
     if (tempTimeCurrent !== data.menu.bm.time.current) {
-        // if (tempTimeCurrent > data.menu.bm.time.current) {
-        //     leaderboard.innerHTML = '';
-        //     $("#ourplayer").remove();
-        //     ourplayerSet = 0;
-        //     leaderboardSet = 0;
-        // }
+        if (tempTimeCurrent > data.menu.bm.time.current) {
+             leaderboard.innerHTML = '';
+             $("#ourplayer").remove();
+             ourplayerSet = 0;
+             leaderboardSet = 0;
+         }
         tempTimeCurrent = data.menu.bm.time.current;
         tempTimeFull = data.menu.bm.time.full;
         tempTimeMP3 = data.menu.bm.time.mp3;
@@ -634,9 +650,8 @@ socket.onmessage = (event) => {
 
             if (interfaceID == 1 && gameState == 2) {
                 upperPart.style.transform = "translateY(-200px)";
-                bottom.style.transform = "translateY(300px)";
-                URIndex.style.transform = "translateY(-280px)";
             } else {
+                smallStats.style.transform = "none";
                 upperPart.style.transform = "none";
                 bottom.style.transform = "none";
                 URIndex.style.transform = "none";
@@ -752,7 +767,7 @@ async function setupUser(name) {
     //const avaImage = await getImage('8266808');
     if (data === null) {
         data = {
-            user_id: "gamer",
+            user_id: "ReasonToBlock",
             username: `${name}`,
             pp_rank: "0",
             pp_raw: "0",
@@ -773,7 +788,7 @@ async function setupUser(name) {
     tempcountryRank = data.pp_country_rank;
     tempPlayerPP = data.pp_raw;
 
-    if (tempUID !== "gamer") {
+    if (tempUID !== "ReasonToBlock") {
         ava.style.backgroundImage = `url('https://a.ppy.sh/${tempUID}')`;
     } else {
         ava.style.backgroundImage = "url('./static/gamer.png')";
@@ -794,9 +809,17 @@ async function setupUser(name) {
         tickRight.style.backgroundColor = `hsl(${avatarColor[1]})`;
         tickRight.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
 
-        document.getElementById("comboBar").style.backgroundColor = `hsl(${avatarColor[0]})`;
+        smallStats.style.backgroundColor = `hsl(${avatarColor[0]})`;
+        smallStats.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[0]})`;
+
+        config.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.2)`;
+        configSecond.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.7)`;
+        
+        document.getElementById("combo").style.backgroundColor = `hsl(${avatarColor[0]})`;
+        document.getElementById("combo").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[0]})`;
         // document.getElementById("comboBar").style.filter = `drop-shadow(0 0 10px hsl(${avatarColor[0]}))`;
-        document.getElementById("ppBar").style.backgroundColor = `hsl(${avatarColor[1]})`;
+        document.getElementById("pp").style.backgroundColor = `hsl(${avatarColor[1]})`;
+        document.getElementById("pp").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[1]})`;
         // document.getElementById("ppBar").style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
 
         // combo.style.borderColor = `hsl(${avatarColor[0]})`;
@@ -853,6 +876,7 @@ async function getMapScores2(beatmapID) {
             count300: arr[6],
             count100: arr[5],
             count50: arr[4],
+            countsliderBreaks: arr[13],
             countmiss: arr[7],
             maxcombo: arr[3],
             countkatu: arr[8],

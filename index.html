@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="css/leaderboard.css" />
 		<link rel="stylesheet" href="css/rankingPanel.css" />
 		<link rel="stylesheet" href="css/odometr.css" />
+		<link rel="stylesheet" href="css/all.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 		<script src="deps/countUp.js"></script>
@@ -25,8 +26,8 @@
 			<div id="top">
 				<div id="hpBG"></div>
 				<div id="hp"></div>
-				<div id="score" class="statContainer" style="left: 350px"></div>
-				<div id="acc" class="statContainer" style="right: 350px"></div>
+				<div id="score" class="statContainer" style="left: 400px"></div>
+				<div id="acc" class="statContainer" style="right: 400px"></div>
 				<div id="ava"></div>
 				<div id="globalContainer" class="xContainer">
 					<div id="ranks" class="rankContainer"></div>
@@ -38,9 +39,26 @@
 				</div>
 				<div id="username" class="otherContainer"></div>
 				<div id="playerPP" class="otherContainer"></div>
-				<div id="tickLeft" class="lightTick" style="left: 630px"></div>
-				<div id="tickRight" class="lightTick" style="right: 630px"></div>
-				<div id="RSRP">Resolved Replays</div>
+				<div id="tickLeft" class="lightTick" style="left: 640px"></div>
+				<div id="tickRight" class="lightTick" style="right: 640px"></div>
+				<div id="RSRP">rsrp_hosizoran_client</div>
+			</div>
+			<div id="smallStats">
+				<div id="strainGraph">
+					<div id="basegraph">
+						<canvas id="canvas" width="310" height="90"></canvas>
+					</div>
+					<div id="progress">
+						<canvas id="canvasSecond" width="310" height="90"></canvas>
+					</div>
+				</div>
+				<div id="stars1">
+					<i class="fas fa-star"></i>
+					<span id="starsCurrent" class="odometer"></span>
+			    </div>
+				<div id="bpmd">
+				<span id="BPM"></span>bpm
+			</div>
 			</div>
 			<div id="bottom">
 				<div id="lowerPart">
@@ -48,30 +66,23 @@
 						<div id="h100" class="odometer"></div>
 						<div id="h50" class="odometer"></div>
 						<div id="h0" class="odometer"></div>
+						<div id="hsb" class="odometer"></div>
 					</div>
-					<div id="comboBar" class="bottomBar"></div>
-					<div id="ppBar" class="bottomBar"></div>
 					<div id="combo" class="odometer combo"></div>
 					<div id="pp" class="odometer pp"></div>
 				</div>
 				<div id="URIndex" class="odometer"><b></b></div>
+				<div id="URText">Unstable Rate</div>
 				<div id="URbar">
 					<div id="l100"></div>
 					<div id="l300"></div>
 					<div id="avgHitError"></div>
+					<div id="URmidbar"></div>
 				</div>
 			</div>
 			<div id="modContainer"></div>
 			<div id="leaderboardx">
 				<div id="leaderboard"></div>
-			</div>
-			<div id="strainGraph">
-				<div id="basegraph">
-					<canvas id="canvas" width="450" height="90"></canvas>
-				</div>
-				<div id="progress">
-					<canvas id="canvasSecond" width="450" height="90"></canvas>
-				</div>
 			</div>
 			<div id="nowPlayingContainer">
 				<div id="overlay"></div>
@@ -80,7 +91,7 @@
 				<div id="mapInfo"></div>
 			</div>
 			<div id="recorderContainer">
-				<div id="recorder">Recorder:</div>
+				<div id="recorder">Recorder</div>
 				<div id="recorderName"></div>
 			</div>
 		</div>
@@ -174,16 +185,16 @@
 					</div>
 				</div>
 				<div id="accInfoResult">
-					<div id="r300" class="rR"></div>
 					<div id="r100" class="rR"></div>
 					<div id="r50" class="rR"></div>
 					<div id="r0" class="rR"></div>
+					<div id="rsb" class="rR"></div>
 				</div>
 				<div id="accInfoBar">
-					<div id="b300" class="accbar" style="background-color: #448ddf; box-shadow: 0 0px 10px 2px #448ddf"></div>
 					<div id="b100" class="accbar" style="background-color: #1ceb82; box-shadow: 0 0px 10px 2px #1ceb82"></div>
 					<div id="b50" class="accbar" style="background-color: #f9d382; box-shadow: 0 0px 10px 2px #f9d382"></div>
 					<div id="b0" class="accbar" style="background-color: #de3950; box-shadow: 0 0px 10px 2px #de3950"></div>
+					<div id="bSB" class="accbar" style="background-color: #32bce9; box-shadow: 0 0px 10px 2px #32bce9"></div>
 				</div>
 				<div id="ppResult"></div>
 				<div id="endBar"></div>
@@ -193,7 +204,7 @@
 					<div id="qc3" class="qcContainer"></div>
 				</div>
 			</div>
-			<div id="resultRecorder"></div>
+			<div id="resultRecorder">HosizoraN Concept Overlay</div>
 		</div>
 		<svg width="0" height="0">
 			<defs>
