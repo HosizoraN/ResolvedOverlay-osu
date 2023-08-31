@@ -417,9 +417,13 @@ socket.onmessage = (event) => {
             window.myLineSecond.update();
         }
     }
+	if(fullTime !== data.menu.bm.time.mp3){
+		fullTime = data.menu.bm.time.mp3;
+		onepart = 1400/fullTime;
+	}
     if (seek !== data.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
         seek = data.menu.bm.time.current;
-        progressChart.style.width = onepart * seek + 'px';
+        progressChart.style.width = onepart * seek / 1.59 +'px';
     }
     if (tempMods !== data.menu.mods.str) {
         document.getElementById("modContainer").innerHTML = "";
@@ -764,7 +768,7 @@ async function setupUser(name) {
     let data;
     if (api != "") data = await getUserDataSet(name);
     else data = null;
-    //const avaImage = await getImage('8266808');
+    //const avaImage = await getImage('12351533');
     if (data === null) {
         data = {
             user_id: "ReasonToBlock",
