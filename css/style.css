@@ -321,3 +321,35 @@ html {
 	height: 120px;
 	bottom: 0px;
 }
+
+#lowerPart {
+	position: absolute;
+	width: 1920px;
+	height: 300px;
+	bottom: 0px;
+	transition: ease-in-out 500ms;
+}
+#accInfo {
+	position: absolute;
+	left:15px;
+	background-image: url("../static/hits.png");
+	background-size: 99%;
+	bottom: 90px;
+	width: 330px;
+	height: 30px;
+	transition: ease-in-out 500ms;
+}
+#hitcounter{
+	position: absolute;
+	display: flex;
+	justify-content: space-around;
+	left: 6px;
+	width: 310px;
+	top: 25px;
+}
+.text{
+    display: flex;
+	font-size: 25px;
+	text-align: left;
+    justify-content: center;
+}

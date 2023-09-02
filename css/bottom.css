@@ -10,14 +10,6 @@
 	transition: ease-in-out 500ms;
 }
 
-#lowerPart {
-	position: absolute;
-	width: 1920px;
-	height: 300px;
-	bottom: 0px;
-	transition: ease-in-out 500ms;
-}
-
 #stats {
 	position: absolute;
 	left: 0;
@@ -110,6 +102,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	right: 1120px;
+	background-color: #161616;
 	text-shadow: 0 1px 3px black;
 }
 #pp {
@@ -127,57 +120,16 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	left: 1120px;
+	background-color: #161616;
 	text-shadow: 0 1px 3px black;
 }
-
-#accInfo {
-	position: absolute;
-	display: flex;
-	justify-content: space-evenly;
-	padding: 5px 0px 5px 0px;
-	border-radius: 20px;
-	border-color: #161616;
-	right:5px;
-	bottom: 10px;
-	width: 300px;
-	height: 30px;
-	background-color: #161616;
-	transition: ease-in-out 500ms;
-	box-shadow: 0 5px 9px rgba(0 0 0 / 0.6);
-}
-
-#h100,
-#h50,
-#h0,
-#hsb {
-	font-family: GothicR;
-	font-size: 18px;
-	line-height: 30px;
-}
-
-#h100 {
-	color: #42f587;
-}
-
-#h50 {
-	color: #ebdf72;
-}
-
-#h0 {
-	color: #de3950;
-}
-
-#hsb {
-	color: #32bce9;
-}
-
 #URmidbar{
 	position: absolute;
-	left: 148px;
+	left: 148.5px;
 	background-color: white;
-	width: 5px;
-	height: 37px;
-	top: -13px;
+	width: 4px;
+	height: 30px;
+	top: -10px;
 	border-radius: 5px;
 	transition: ease-out 500ms;
 }
@@ -186,8 +138,8 @@
 	position: absolute;
 	width: 20px;
 	height: 20px;
-	top: 10px;
-	left: 147.5px;
+	top: 15px;
+	left: 140.5px;
 	background-image: url("../static/arrowtick.png");
 	background-size: 100%;
 	transition: ease-out 100ms;
@@ -205,20 +157,7 @@
 	border-radius: 5px;
 	box-shadow: 0 0 9px black;
 	transition: ease-in-out 1000ms;
-}
-
-#avgHitError {
-	position: absolute;
-	width: 20px;
-	height: 20px;
-	top: 14px;
-	left: 140px;
-	background-image: url("../static/arrowtick.png");
-	background-size: 100%;
-	transition: ease-out 100ms;
-	transform-origin: 50% 50%;
-	-webkit-filter: drop-shadow(5px 5px 5px #222222);
-	filter: drop-shadow(5px 5px 5px #222222);
+	z-index: -1;
 }
 
 #l100 {
@@ -228,6 +167,7 @@
 	left: 45.1px;
 	background-color: #57e313;
 	transition: ease-in-out 500ms;
+	z-index: -1;
 }
 
 #l300 {
@@ -237,17 +177,19 @@
 	left: 90.25px;
 	background-color: #32bce9;
 	transition: ease-in-out 500ms;
+	z-index: -1;
 }
 
 .tick {
 	position: absolute;
-	top: -10px;
-	height: 30px;
-	width: 7px;
+	top: -13.5px;
+	height: 35px;
+	width: 6px;
 	background-color: rgba(255 255 255 / .3);
 	left: 147.5px;
 	border-radius: 3px;
 	transition: ease-out 500ms;
+	z-index: -1;
 }
 
 #URIndex {
@@ -311,7 +253,7 @@
 }
 
 #recorder {
-	display: hidden;
+	display: none;
 	width: 100%;
 	height: 50px;
 	color: white;
@@ -323,7 +265,7 @@
 }
 
 #recorderName {
-	display: hidden;
+	display: none;
 	width: 100%;
 	height: 50px;
 	color: white;

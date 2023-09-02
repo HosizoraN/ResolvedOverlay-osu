@@ -303,6 +303,7 @@ socket.onmessage = (event) => {
             if (gameState !== 7) deRankingPanel();
             upperPart.style.transform = "translateY(-200px)";
             smallStats.style.transform = "translateX(-400px)";
+            lowerPart.style.transform = "translateX(-400px)";
 
             tickPos = 0;
             tempAvg = 0;
@@ -332,6 +333,7 @@ socket.onmessage = (event) => {
             deRankingPanel();
             upperPart.style.transform = "none";
             bottom.style.transform = "none";
+            lowerPart.style.transform = "none";
             smallStats.style.transform = "none";
             document.getElementById("modContainer").style.transform = "none";
         }
@@ -395,7 +397,7 @@ socket.onmessage = (event) => {
         acc.innerHTML = tempAcc;
         animation.acc.update(acc.innerHTML);
     }
-    if (tempBPM !== data.menu.bm.stats.BPM.max) {
+    if (tempBPM !== data.menu.bm.stats.BPM.min) {
         tempBPM = data.menu.bm.stats.BPM.max;
         BPM.innerHTML = tempBPM;
     }
@@ -423,7 +425,7 @@ socket.onmessage = (event) => {
 	}
     if (seek !== data.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
         seek = data.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 1.59 +'px';
+        progressChart.style.width = onepart * seek / 1.58 +'px';
     }
     if (tempMods !== data.menu.mods.str) {
         document.getElementById("modContainer").innerHTML = "";
@@ -657,6 +659,7 @@ socket.onmessage = (event) => {
             } else {
                 smallStats.style.transform = "none";
                 upperPart.style.transform = "none";
+                lowerPart.style.transform = "none";
                 bottom.style.transform = "none";
                 URIndex.style.transform = "none";
             }

@@ -1,4 +1,5 @@
 #leaderboardx {
+	display: none;
 	position: absolute;
 	width: 240px;
 	height: 445px;
@@ -13,6 +14,7 @@
 }
 
 #leaderboard {
+	display: none;
 	position: absolute;
 	width: 240px;
 	height: 445px;
