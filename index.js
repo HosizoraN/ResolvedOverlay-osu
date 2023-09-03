@@ -66,8 +66,8 @@ let ranks = document.getElementById("ranks");
 let countryRank = document.getElementById("countryRank");
 let playerPP = document.getElementById("playerPP");
 
-let tickLeft = document.getElementById("tickLeft");
-let tickRight = document.getElementById("tickRight");
+let BarLeft = document.getElementById("BarLeft");
+let BarRight = document.getElementById("BarRight");
 
 // HP BAR
 let hp = document.getElementById("hp");
@@ -841,10 +841,10 @@ async function setupUser(name) {
 
     const avatarColor = await postUserID(tempUID);
     if (avatarColor) {
-        tickLeft.style.backgroundColor = `hsl(${avatarColor[0]})`;
-        tickLeft.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[0]})`;
-        tickRight.style.backgroundColor = `hsl(${avatarColor[1]})`;
-        tickRight.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
+        BarLeft.style.backgroundColor = `hsl(${avatarColor[0]})`;
+        BarLeft.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[0]})`;
+        BarRight.style.backgroundColor = `hsl(${avatarColor[1]})`;
+        BarRight.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
 
         smallStats.style.backgroundColor = `hsl(${avatarColor[0]})`;
         smallStats.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[0]})`;

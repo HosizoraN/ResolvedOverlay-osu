@@ -127,7 +127,7 @@ html {
 	right: 655px;
 }
 
-.lightTick {
+.lightBar {
 	position: absolute;
 	top: 30px;
 	width: 230px;
@@ -342,14 +342,13 @@ html {
 #hitcounter{
 	position: absolute;
 	display: flex;
+	left: 3px;
 	justify-content: space-around;
-	left: 6px;
-	width: 310px;
+	width: 320px;
 	top: 25px;
 }
 .text{
     display: flex;
 	font-size: 25px;
-	text-align: left;
     justify-content: center;
 }
