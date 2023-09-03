@@ -495,7 +495,14 @@ socket.onmessage = (event) => {
             tick.style.opacity = 1;
             tick.style.transform = `translateX(${tickPos}px)`;
             document.getElementById("URbar").appendChild(tick);
-
+            if((tickPos / fullPos) - l300.style.width){
+                tick.style.backgroundColor = "#32BCE9"
+            }
+            else if((tickPos / fullPos) - l100.style.width){
+                tick.style.backgroundColor = "#3DE932"
+            }
+            else
+                tick.style.backgroundColor = "#E9C232"
             function fade() {
                 tick.style.opacity = 0;
             }
