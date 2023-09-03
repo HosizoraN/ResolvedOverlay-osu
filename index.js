@@ -180,7 +180,10 @@ socket.onclose = (event) => {
 socket.onerror = (error) => {
     console.log("Socket Error: ", error);
 };
-
+let tick = [];
+for (var t = 0; t < 30; t++) {
+    tick[t] = document.querySelectorAll("[id^=tick]")[t];
+}
 let tempMapID, tempImg, tempMapArtist, tempMapTitle, tempMapDiff, tempMapper, tempRankedStatus;
 
 let tempSR, tempCS, tempAR, tempOD, tempHPDr;
@@ -251,6 +254,21 @@ let colorGet = get_bg_color("#nowPlayingContainer");
 
 let tempMapScores = [];
 let playerPosition;
+
+let currentErrorValue;
+
+let error_320 = 16;
+let error_300 = 0;
+let error_200 = 0;
+let error_100 = 0;
+let error_50 = 0;
+
+function calculate_od(temp){
+    error_300 = 62 - (3 * temp);
+    error_200 = 97 - (3 * temp);
+    error_100 = 127 - (3 * temp);
+    error_50 = 151 - (3 * temp);
+}
 
 window.onload = function () {
     var ctx = document.getElementById("canvas").getContext("2d");
@@ -476,45 +494,50 @@ socket.onmessage = (event) => {
 
     if (data.gameplay.hits.hitErrorArray !== null) {
         tempSmooth = smooth(data.gameplay.hits.hitErrorArray, 4);
+        OD = data.menu.bm.stats.memoryOD;
 
         if (tempHitErrorArrayLength !== tempSmooth.length) {
             tempHitErrorArrayLength = tempSmooth.length;
             for (var a = 0; a < tempHitErrorArrayLength; a++) {
                 tempAvg = tempAvg * 0.9 + tempSmooth[a] * 0.1;
             }
-            fullPos = -10 * OD + 199.5;
-            tickPos = (data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / fullPos) * 145;
+            fullPos = (-10 * OD + 199.5);
+            tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / fullPos * 145;
+            currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
             avgHitError.style.transform = `translateX(${(tempAvg / fullPos) * 150}px)`;
             l100.style.width = `${((-8 * OD + 139.5) / fullPos) * 300}px`;
             l100.style.transform = `translateX(${(209.8 - ((-8 * OD + 139.5) / fullPos) * 300) / 2}px)`;
             l300.style.width = `${((-6 * OD + 79.5) / fullPos) * 300}px`;
             l300.style.transform = `translateX(${(119.5 - ((-6 * OD + 79.5) / fullPos) * 300) / 2}px)`;
-            let tick = document.createElement("div");
-            tick.id = `tick${tempHitErrorArrayLength}`;
-            tick.setAttribute("class", "tick");
-            tick.style.opacity = 1;
-            tick.style.transform = `translateX(${tickPos}px)`;
-            document.getElementById("URbar").appendChild(tick);
-            if((tickPos / fullPos) - l300.style.width){
-                tick.style.backgroundColor = "#32BCE9"
-            }
-            else if((tickPos / fullPos) - l100.style.width){
-                tick.style.backgroundColor = "#3DE932"
-            }
-            else
-                tick.style.backgroundColor = "#E9C232"
-            function fade() {
-                tick.style.opacity = 0;
-            }
+            for (var c = 0; c < 30; c++) {
+                if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
+                    tick[c].style.opacity = 1;
+                    tick[c].style.transform = `translateX(${tickPos}px)`;
 
-            function remove() {
-                document.getElementById("URbar").removeChild(tick);
+                    if(currentErrorValue >= -(error_320) && currentErrorValue <= error_320){
+                        tick[c].style.backgroundColor = '#00FFEC';
+                    }
+                    else if(currentErrorValue >= -(error_300) && currentErrorValue <= error_300){
+                        tick[c].style.backgroundColor = '#00FFEC';
+                    }
+                    else if(currentErrorValue >= -(error_200) && currentErrorValue <= error_200){
+                        tick[c].style.backgroundColor = '#68FF00';
+                    }
+                    else if(currentErrorValue >= -(error_100) && currentErrorValue <= error_100){
+                        tick[c].style.backgroundColor = '#68FF00';
+                    }
+                    else {
+                        tick[c].style.backgroundColor = '#FFC100';
+                    }
+                var s = document.querySelectorAll("[id^=tick]")[c].style;
+                s.opacity = 1;
+                (function fade() {
+                    (s.opacity -= .05) < 0 ? s.opacity = 0 : setTimeout(fade, 125)
+                })();
             }
-            setTimeout(fade, 2000);
-            setTimeout(remove, 2500);
+        }
         }
     }
-
     if (tempURIndex !== data.gameplay.hits.unstableRate) {
         tempURIndex = data.gameplay.hits.unstableRate;
         URIndex.innerHTML = tempURIndex;
