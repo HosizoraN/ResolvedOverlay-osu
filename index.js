@@ -257,17 +257,14 @@ let playerPosition;
 
 let currentErrorValue;
 
-let error_320 = 16;
-let error_300 = 0;
-let error_200 = 0;
-let error_100 = 0;
-let error_50 = 0;
+let error_h300 = 30;
+let error_h100 = 73;
+let error_h50 = 0;
 
 function calculate_od(temp){
-    error_300 = 62 - (3 * temp);
-    error_200 = 97 - (3 * temp);
-    error_100 = 127 - (3 * temp);
-    error_50 = 151 - (3 * temp);
+    error_h300 = 97 - (3 * temp);
+    error_h100 = 151 - (3 * temp);
+    error_h50 = 188 - (3 * temp);
 }
 
 window.onload = function () {
@@ -509,33 +506,40 @@ socket.onmessage = (event) => {
             l100.style.transform = `translateX(${(209.8 - ((-8 * OD + 139.5) / fullPos) * 300) / 2}px)`;
             l300.style.width = `${((-6 * OD + 79.5) / fullPos) * 300}px`;
             l300.style.transform = `translateX(${(119.5 - ((-6 * OD + 79.5) / fullPos) * 300) / 2}px)`;
+            let tick = document.createElement("div");
+            tick.id = `tick${tempHitErrorArrayLength}`;
+            tick.setAttribute("class", "tick");
+            tick.style.opacity = 1;
+            tick.style.transform = `translateX(${tickPos}px)`;
+            document.getElementById("URbar").appendChild(tick);
             for (var c = 0; c < 30; c++) {
                 if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
-                    tick[c].style.opacity = 1;
-                    tick[c].style.transform = `translateX(${tickPos}px)`;
+                    tick.style.opacity = 1;
+                    tick.style.transform = `translateX(${tickPos}px)`;
 
-                    if(currentErrorValue >= -(error_320) && currentErrorValue <= error_320){
-                        tick[c].style.backgroundColor = '#00FFEC';
+                    if(currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300){
+                        tick.style.backgroundColor = '#00FFEC';
+                        tick.style.opacity = 0.5
                     }
-                    else if(currentErrorValue >= -(error_300) && currentErrorValue <= error_300){
-                        tick[c].style.backgroundColor = '#00FFEC';
-                    }
-                    else if(currentErrorValue >= -(error_200) && currentErrorValue <= error_200){
-                        tick[c].style.backgroundColor = '#68FF00';
-                    }
-                    else if(currentErrorValue >= -(error_100) && currentErrorValue <= error_100){
-                        tick[c].style.backgroundColor = '#68FF00';
+                    else if(currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100){
+                        tick.style.backgroundColor = '#68FF00';
+                        tick.style.opacity = 0.5
                     }
                     else {
-                        tick[c].style.backgroundColor = '#FFC100';
+                        tick.style.backgroundColor = '#FFC100';
+                        tick.style.opacity = 0.5
                     }
-                var s = document.querySelectorAll("[id^=tick]")[c].style;
-                s.opacity = 1;
-                (function fade() {
-                    (s.opacity -= .05) < 0 ? s.opacity = 0 : setTimeout(fade, 125)
-                })();
+                    
+                function fade() {
+                    tick.style.opacity = 0;
+                }
+                function remove() {
+                    document.getElementById("URbar").removeChild(tick);
+                }
+                setTimeout(fade, 2000);
+                setTimeout(remove, 2500);
+                }
             }
-        }
         }
     }
     if (tempURIndex !== data.gameplay.hits.unstableRate) {
