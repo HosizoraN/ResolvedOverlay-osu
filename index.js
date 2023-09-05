@@ -102,6 +102,7 @@ let rAR = document.getElementById("AR");
 let rOD = document.getElementById("OD");
 let rHP = document.getElementById("HD");
 let rSR = document.getElementById("SR");
+let sBPM = document.getElementById("sBPM");
 
 let player = document.getElementById("player");
 let playerAva = document.getElementById("playerAva");
@@ -192,6 +193,7 @@ let gameState;
 let tempScore;
 let tempAcc;
 let tempCombo;
+let tempMaxCombo;
 let interfaceID;
 
 let temp300;
@@ -331,8 +333,6 @@ socket.onmessage = (event) => {
             bottom.style.transform = "translateY(300px)";
             URIndex.style.transform = "none";
 
-            document.getElementById("modContainer").style.transform = "translateX(500px)";
-
             document.getElementById("leaderboardx").style.transform = "translateX(-400px)";
 
             URIndex.innerHTML = "";
@@ -350,7 +350,6 @@ socket.onmessage = (event) => {
             bottom.style.transform = "none";
             lowerPart.style.transform = "none";
             smallStats.style.transform = "none";
-            document.getElementById("modContainer").style.transform = "none";
         }
     }
 
@@ -443,7 +442,6 @@ socket.onmessage = (event) => {
         progressChart.style.width = onepart * seek / 1.58 +'px';
     }
     if (tempMods !== data.menu.mods.str) {
-        document.getElementById("modContainer").innerHTML = "";
 
         tempMods = data.menu.mods.str;
 
@@ -481,9 +479,9 @@ socket.onmessage = (event) => {
     }
     if (tempCombo !== data.gameplay.combo.current) {
         tempCombo = data.gameplay.combo.current;
-        if (data.gameplay.combo.current == data.gameplay.combo.max) {
-            tempMaxCombo = data.gameplay.combo.max;
-        }
+    if (data.gameplay.combo.current == data.gameplay.combo.max) {
+        tempMaxCombo = data.gameplay.combo.max;
+    }
         combo.innerHTML = tempCombo;
         animation.combo.update(combo.innerHTML);
     }

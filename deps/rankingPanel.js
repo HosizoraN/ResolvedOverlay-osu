@@ -41,10 +41,10 @@ async function fetchData() {
             }
         }
         for (var i = 0; i < 5; i++) {
-            document.getElementById(`bg${i + 1}`).style.backgroundImage = `unset`;
+            document.getElementById(`bg${i + 1}`).style.backgroundImage = `owo`;
             document.getElementById(`topArtistTitle${i + 1}`).innerHTML = `Offline Play`;
-            document.getElementById(`topDiff${i + 1}`).innerHTML = `[-]`;
-            document.getElementById(`topPP${i + 1}`).innerHTML = `${playerBest[i]["pp"]}pp`
+            document.getElementById(`topDiff${i + 1}`).innerHTML = `No Diff Data`;
+            document.getElementById(`topPP${i + 1}`).innerHTML = `No PP`
         }
     } else {
         playerBest = await getUserTop(tempUsername);
@@ -123,12 +123,14 @@ async function setupRankingPanel() {
     accResult.innerHTML = tempAcc.toFixed(2) + '%';
     comboResult.innerHTML = tempMaxCombo + 'x';
 
-    URResult.innerHTML = tempURIndex.toFixed(2) + 'UR';
+    URResult.innerHTML = tempURIndex.toFixed(2) + ' UR';
     r100.innerHTML = temp100;
     r50.innerHTML = temp50;
     r0.innerHTML = temp0;
     rsb.innerHTML = tempsliderBreaks;
+    sBPM.innerHTML = `${tempBPM} BPM`;
     ppResult.innerHTML = tempPP + 'pp';
+    Mods.innerHTML = `Mods Used: ${tempMods}`;
 
     resultRecorder.style.transform = 'none';
 }
@@ -148,3 +150,4 @@ async function deRankingPanel() {
     nowPlayingContainer.style.opacity = 1;
     document.getElementById("strainGraph").style.opacity = 1;
 }
+

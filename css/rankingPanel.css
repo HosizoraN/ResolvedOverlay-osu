@@ -391,8 +391,8 @@
 }
 
 .accbar {
-    margin-left: 22.5px;
-    margin-right: 22.5px;
+    margin-left: 20px;
+    margin-right: 20px;
     width: 10px;
     height: 5px;
     border-radius: 5px;;
@@ -460,4 +460,33 @@
 	color: white;
 	text-align: center;
 	transition: ease-in-out 500ms;
+}
+#sBPM {
+	position: absolute;
+	top: 0;
+	bottom: 110px;
+	left: 50px;
+	margin-top: auto;
+	margin-bottom: auto;
+	max-width: 310px;
+	height: 40px;
+	padding: 0 10px 0 10px;
+	background-color: #de3950;
+	box-shadow: 0 5px 8px 0 #de3950;
+	border-radius: 10px;
+	line-height: 40px;
+	text-align: center;
+	font-size: 24px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#Mods{
+	position: absolute;
+	width: 425px;
+	height: 50px;
+	left: 745px;
+	top: 870px;
+	font-size: 30px;
+	text-align: center;
 }
