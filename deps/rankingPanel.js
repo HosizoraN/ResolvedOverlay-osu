@@ -130,7 +130,6 @@ async function setupRankingPanel() {
     rsb.innerHTML = tempsliderBreaks;
     sBPM.innerHTML = `${tempBPM} BPM`;
     ppResult.innerHTML = tempPP + 'pp';
-    Mods.innerHTML = `Mods Used: ${tempMods}`;
 
     resultRecorder.style.transform = 'none';
 }

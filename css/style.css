@@ -68,7 +68,7 @@ html {
 	background-size: 100%;
 	background-position: 50% 50%;
 	z-index: -2;
-	transition: ease-in-out 500ms;
+	transition: ease-in-out 350ms;
 	opacity: 0;
 }
 
@@ -175,7 +175,6 @@ html {
 	text-align: center;
 	border-radius: 15px;
 	transition: ease-in-out 500ms;
-	text-shadow: 0 3px 10px black;
 	/* box-shadow: 0 5px 5px rgba(0, 0, 0, 0.4); */
 }
 
@@ -206,7 +205,6 @@ html {
 	text-align: center;
 	border-radius: 5px;
 	transition: ease-in-out 500ms;
-	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.7);
 }
 #global {
 	background-image: url('../static/globalFlag.png');
@@ -269,12 +267,11 @@ html {
 	margin-left: auto;
 	margin-right: auto;
 	font-size: 20px;
-	text-shadow: 0 5px 5px rgba(0, 0, 0, 1);
 	overflow: hidden;
 }
 #smallStats{
 	width: 330px;
-	height: 55px;
+	height: 50px;
 	font-size: 25px;
 	border-radius: 10px;
 	position: absolute;
@@ -288,13 +285,13 @@ html {
 #stars1 {
 	position: absolute;
 	left: 15px;
-	top: 12px;
+	top: 10px;
 }
 #bpmd{
 	position: absolute;
 	text-align: right;
 	right: 20px;
-	top: 12px;
+	top: 10px;
 }
 #strainGraph {
 	position: absolute;

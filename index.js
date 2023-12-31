@@ -335,6 +335,8 @@ socket.onmessage = (event) => {
 
             document.getElementById("leaderboardx").style.transform = "translateX(-400px)";
 
+            document.getElementById("modContainer").style.transform = "translateX(500px)";
+
             URIndex.innerHTML = "";
 
             // setTimeout(() => {
@@ -350,6 +352,7 @@ socket.onmessage = (event) => {
             bottom.style.transform = "none";
             lowerPart.style.transform = "none";
             smallStats.style.transform = "none";
+            document.getElementById("modContainer").style.transform = 'none';
         }
     }
 
@@ -442,6 +445,7 @@ socket.onmessage = (event) => {
         progressChart.style.width = onepart * seek / 1.58 +'px';
     }
     if (tempMods !== data.menu.mods.str) {
+        document.getElementById("modContainer").innerHTML = "";
 
         tempMods = data.menu.mods.str;
 
@@ -479,11 +483,11 @@ socket.onmessage = (event) => {
     }
     if (tempCombo !== data.gameplay.combo.current) {
         tempCombo = data.gameplay.combo.current;
-    if (data.gameplay.combo.current == data.gameplay.combo.max) {
-        tempMaxCombo = data.gameplay.combo.max;
-    }
         combo.innerHTML = tempCombo;
         animation.combo.update(combo.innerHTML);
+    }
+    if (tempMaxCombo !== data.gameplay.combo.max) {
+        tempMaxCombo = data.gameplay.combo.max;
     }
 
 
@@ -517,15 +521,15 @@ socket.onmessage = (event) => {
 
                     if(currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300){
                         tick.style.backgroundColor = '#00FFEC';
-                        tick.style.opacity = 0.5
+                        tick.style.opacity = 0.4
                     }
                     else if(currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100){
                         tick.style.backgroundColor = '#68FF00';
-                        tick.style.opacity = 0.5
+                        tick.style.opacity = 0.4
                     }
                     else {
                         tick.style.backgroundColor = '#FFC100';
-                        tick.style.opacity = 0.5
+                        tick.style.opacity = 0.4
                     }
                     
                 function fade() {
@@ -595,7 +599,7 @@ socket.onmessage = (event) => {
 
         if (tempTimeCurrent >= tempTimeFull - 10000 && gameState === 2 && !apiGetSet) fetchData();
 
-        if (tempTimeCurrent >= tempTimeMP3 - 2000 && gameState === 2) rankingPanelBG.style.opacity = 1;
+        if (tempTimeCurrent >= tempTimeFull && gameState === 2) rankingPanelBG.style.opacity = 1;
 
         if (gameState === 7) {
             if (!rankingPanelSet) setupRankingPanel();
@@ -803,10 +807,10 @@ async function setupUser(name) {
     let data;
     if (api != "") data = await getUserDataSet(name);
     else data = null;
-    //const avaImage = await getImage('12351533');
+    //const avaImage = await getImage('24385367');
     if (data === null) {
         data = {
-            user_id: "ReasonToBlock",
+            user_id: "- Nhikaa -",
             username: `${name}`,
             pp_rank: "0",
             pp_raw: "0",
@@ -827,7 +831,7 @@ async function setupUser(name) {
     tempcountryRank = data.pp_country_rank;
     tempPlayerPP = data.pp_raw;
 
-    if (tempUID !== "ReasonToBlock") {
+    if (tempUID !== "- Nhikaa -") {
         ava.style.backgroundImage = `url('https://a.ppy.sh/${tempUID}')`;
     } else {
         ava.style.backgroundImage = "url('./static/gamer.png')";
@@ -1161,7 +1165,7 @@ async function postNhayCam_1(beatmap_id) {
 async function postUserID(id) {
     try {
         let imageData = null;
-        const dataImageAsBase64 = await axios.get(`http://tryz.vercel.app/api/c/${id}`).then((response) => {
+        const dataImageAsBase64 = await axios.get(`http://tryz.vercel.app/api/color/${id}`).then((response) => {
             imageData = response.data.colorData;
         });
         return imageData;
