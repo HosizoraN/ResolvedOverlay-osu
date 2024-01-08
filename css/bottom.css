@@ -88,42 +88,58 @@
 	bottom: 20px;
 }
 #combo {
-    position: absolute;
-	padding: 8px 10px 8px 10px;
-	text-align: center;
-	margin: auto;
+	font-size: 30px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+}
+#CMCombo {
+	font-size: 30px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+}
+#comboCont {
+	position: absolute;
+	padding: 3px 10px 8px 10px;
 	border-radius: 10px;
 	bottom: 10px;
-	width: auto;
-	font-size: 30px;
+	width: max-width;
+	transition: ease-in-out 500ms;
+	z-index: 0;
+	white-space: nowrap;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	right: 1195px;
+	background-color: #161616;
+}
+#ppCont {
+	position: absolute;
+	padding: 3px 10px 8px 10px;
+	border-radius: 10px;
+	bottom: 10px;
+	width: max-width;
+	text-align: center;
 	transition: ease-in-out 500ms;
 	z-index: 0;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	right: 1120px;
+	left: 1195px;
 	background-color: #161616;
 }
 #pp {
-    position: absolute;
-	padding: 8px 10px 8px 10px;
-	margin: auto;
-	text-align: center;
-	border-radius: 10px;
-	bottom: 10px;
-	width: auto;
 	font-size: 30px;
-	transition: ease-in-out 500ms;
-	z-index: 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	left: 1120px;
-	background-color: #161616;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+}
+#ppFC {
+	font-size: 30px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+}
+#slash{
+	font-size: 30px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 #URmidbar{
 	position: absolute;
-	left: 148.5px;
+	left: 224px;
 	background-color: white;
 	width: 4px;
 	height: 30px;
@@ -137,7 +153,7 @@
 	width: 20px;
 	height: 20px;
 	top: 15px;
-	left: 140.5px;
+	left: 215.5px;
 	background-image: url("../static/arrowtick.png");
 	background-size: 100%;
 	transition: ease-out 100ms;
@@ -145,24 +161,33 @@
 	-webkit-filter: drop-shadow(5px 5px 5px #222222);
 	filter: drop-shadow(5px 5px 5px #222222);
 }
+#URbar2{
+	display: none;
+	position: absolute;
+	left: 735px;
+	bottom: 20px;
+	width: 450px;
+	height: 10px;
+}
 #URbar {
 	position: absolute;
-	left: 810px;
+	display: none;
+	left: 735px;
 	bottom: 20px;
-	width: 300px;
+	width: 450px;
 	height: 10px;
 	background-color: #daae46;
 	border-radius: 5px;
 	box-shadow: 0 0 9px black;
-	transition: ease-in-out 1000ms;
+	transition: ease-in-out 500ms;
 	z-index: -1;
 }
 
 #l100 {
 	position: absolute;
 	height: 10px;
-	width: 209.8px;
-	left: 45.1px;
+	width: 315px;
+	left: 68px;
 	background-color: #57e313;
 	transition: ease-in-out 500ms;
 	z-index: -1;
@@ -171,8 +196,8 @@
 #l300 {
 	position: absolute;
 	height: 10px;
-	width: 119.5px;
-	left: 90.25px;
+	width: 180px;
+	left: 135px;
 	background-color: #32bce9;
 	transition: ease-in-out 500ms;
 	z-index: -1;
@@ -184,7 +209,7 @@
 	height: 35px;
 	width: 6px;
 	background-color: rgba(255 255 255 / .3);
-	left: 147.5px;
+	left: 121px;
 	border-radius: 3px;
 	transition: ease-out 500ms;
 	z-index: -1;
@@ -192,9 +217,7 @@
 
 #URIndex {
 	position: absolute;
-	bottom: 65px;
-	margin-left: auto;
-	margin-right: auto;
+	bottom: 50px;
 	left: 0;
 	right: 0;
 	font-size: 35px;
@@ -204,31 +227,21 @@
 	padding: 5px 0px 5px 0px;
 	color: #fff;
 	transition: ease-in-out 500ms;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 #URText{
 	position: absolute;
-	bottom: 40px;
+	bottom: 25px;
 	left: 0;
 	right: 0;
-	font-size: 23px;
+	font-size: 22px;
 	display: block;
 	font-weight: lighter;
 	text-align: center;
 	padding: 5px 0px 5px 0px;
 	color: #fff;
 	transition: ease-in-out 500ms;
-}
-
-#modContainer {
-	position: absolute;
-	display: flex;
-	justify-content: flex-end;
-	flex-direction: row-reverse;
-	align-items: center;
-	height: 100px;
-	top: 125px;
-	right: 50px;
-	transition: ease-in-out 500ms;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 .bottomBar {
     position: absolute;

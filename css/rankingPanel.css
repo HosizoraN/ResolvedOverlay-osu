@@ -481,12 +481,12 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-#Mods{
-	position: absolute;
-	width: 425px;
-	height: 50px;
-	left: 745px;
-	top: 870px;
-	font-size: 30px;
-	text-align: center;
+#modContainer {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	flex-direction: row-reverse;
+	align-items: center;
+	height: 1800px;
+	transition: ease-in-out 500ms;
 }

@@ -90,4 +90,20 @@ var get_bg_color = (function(window, undefined) {
 
         return rgb;
     };
+    var rgb;
+ 
+    setTimeout(() => {
+        rgb = averageColor(
+            document.getElementById('img'));
+
+        // Select the element and set its
+        // background color
+        document
+            .getElementById("pp")
+            .getElementById("combo")
+            .style.backgroundColor =
+            'rgb(' + rgb.r + ','
+            + rgb.g + ','
+            + rgb.b + ')';
+    }, 500)
 })(window);

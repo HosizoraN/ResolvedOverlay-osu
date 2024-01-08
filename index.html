@@ -28,7 +28,7 @@
 				<div id="hp"></div>
 				<div id="score" class="statContainer" style="left: 400px"></div>
 				<div id="acc" class="statContainer" style="right: 400px"></div>
-				<div id="ava"></div>
+				<div id="ava" id="img"></div>
 				<div id="globalContainer" class="xContainer">
 					<div id="ranks" class="rankContainer"></div>
 					<div id="global" class="flag"></div>
@@ -61,13 +61,19 @@
 			</div>
 			</div>
 			<div id="bottom">
-					<div id="combo" class="odometer combo"></div>
-					<div id="pp" class="odometer pp"></div>
+					<div id="comboCont">
+						<span id="combo" class="odometer"></span><span id="slash"></span><span id="CMCombo" class="odometer"></span><span style="font-size: 30px; text-shadow: 0 2px 5px rgba(0, 0, 0, 1);">x</span>
+					</div>
+					<div id="ppCont">
+						<span id="pp" class="odometer"></span><span style="font-size: 30px; text-shadow: 0 2px 5px rgba(0, 0, 0, 1);"> / </span><span id="ppFC" class="odometer pp"></span>
+					</div>
 					<div id="URIndex" class="odometer unstableRate"><b></b></div>
 					<div id="URText">Unstable Rate</div>
 					<div id="URbar">
 						<div id="l100"></div>
 						<div id="l300"></div>
+					</div>
+					<div id="URbar2">
 						<div id="avgHitError"></div>
 						<div id="URmidbar"></div>
 					</div>
@@ -102,7 +108,6 @@
 					</div>
 					</div>
 				</div>
-			<div id="modContainer"></div>
 			<div id="leaderboardx">
 				<div id="leaderboard"></div>
 			</div>
@@ -228,6 +233,7 @@
 				</div>
 			</div>
 			<div id="resultRecorder">HosizoraN Concept Overlay</div>
+			<div id="modContainer"></div>
 		</div>
 		<svg width="0" height="0">
 			<defs>

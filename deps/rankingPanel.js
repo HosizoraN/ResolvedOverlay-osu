@@ -91,6 +91,7 @@ async function setupRankingPanel() {
     player.style.transform = "translateX(0)";
     result.style.transform = "translateX(0)";
     rankingResult.style.transform = "translateY(0)";
+    document.getElementById("modContainer").style.transform = "none";
 
     playerName.innerHTML = tempUsername;
 

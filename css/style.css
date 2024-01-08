@@ -67,8 +67,8 @@ html {
 	height: 100%;
 	background-size: 100%;
 	background-position: 50% 50%;
-	z-index: -2;
-	transition: ease-in-out 350ms;
+	z-index: 2;
+	transition: ease-in-out 500ms;
 	opacity: 0;
 }
 
@@ -78,6 +78,7 @@ html {
 	top: 5px;
 	height: 125px;
 	transition: ease-in-out 500ms;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 
 #ava {
@@ -120,11 +121,13 @@ html {
 #username {
 	top: 30px;
 	left: 655px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 
 #playerPP {
 	top: 30px;
 	right: 655px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 
 .lightBar {
@@ -181,11 +184,13 @@ html {
 #ranks {
 	right: 0px;
 	top: 5px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 
 #countryRank {
 	left: 0px;
 	top: 5px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 
 .flag {
@@ -286,12 +291,14 @@ html {
 	position: absolute;
 	left: 15px;
 	top: 10px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 #bpmd{
 	position: absolute;
 	text-align: right;
 	right: 20px;
 	top: 10px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 #strainGraph {
 	position: absolute;
@@ -343,6 +350,7 @@ html {
 	justify-content: space-around;
 	width: 320px;
 	top: 25px;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 .text{
     display: flex;

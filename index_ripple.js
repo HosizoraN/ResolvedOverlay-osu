@@ -22,7 +22,6 @@ async function getAPI() {
     }
 }
 getAPI();
-
 // START
 let socket = new ReconnectingWebSocket("ws://127.0.0.1:24050/ws");
 let mapid = document.getElementById("mapid");
@@ -46,6 +45,7 @@ let upperPart = document.getElementById("top");
 let score = document.getElementById("score");
 let acc = document.getElementById("acc");
 let combo = document.getElementById("combo");
+let CMCombo = document.getElementById("CMCombo");
 
 // ACCURACY INFO
 let bottom = document.getElementById("bottom");
@@ -58,6 +58,7 @@ let hsliderBreaks = document.getElementById("hsb");
 
 // PERFORMANCE POINTS
 let pp = document.getElementById("pp");
+let ppFC = document.getElementById("ppFC");
 
 // PLAYER INFO
 let username = document.getElementById("username");
@@ -204,6 +205,7 @@ let tempsliderBreaks;
 let tempGrade;
 
 let tempPP;
+let tempPPfc;
 
 let tempUsername;
 let tempUID;
@@ -259,14 +261,13 @@ let playerPosition;
 
 let currentErrorValue;
 
-let error_h300 = 30;
-let error_h100 = 73;
+let error_h300 = 25;
+let error_h100 = 63;
 let error_h50 = 0;
 
 function calculate_od(temp){
-    error_h300 = 97 - (3 * temp);
-    error_h100 = 151 - (3 * temp);
-    error_h50 = 188 - (3 * temp);
+    error_h300 = 180 - (2 * temp);
+    error_h100 = 315 - (2 * temp);
 }
 
 window.onload = function () {
@@ -279,7 +280,6 @@ window.onload = function () {
 
 socket.onmessage = (event) => {
     let data = JSON.parse(event.data);
-
     if (!colorSet) {
         colorSet = 1;
         setTimeout(function () {
@@ -324,10 +324,14 @@ socket.onmessage = (event) => {
 
             tickPos = 0;
             tempAvg = 0;
-            l300.style.width = "119.5px";
+            URbar.style.width = "450px";
+            URbar.style.transform ="translateX(0)";
+            l300.style.width = "180px";
             l300.style.transform = "translateX(0)";
-            l100.style.width = "209.8px";
+            l100.style.width = "315px";
             l100.style.transform = "translateX(0)";
+            comboCont.style.transform = "none";
+            ppCont.style.transform = "none";
             avgHitError.style.transform = "translateX(0)";
 
             bottom.style.transform = "translateY(300px)";
@@ -335,7 +339,7 @@ socket.onmessage = (event) => {
 
             document.getElementById("leaderboardx").style.transform = "translateX(-400px)";
 
-            document.getElementById("modContainer").style.transform = "translateX(500px)";
+            document.getElementById("modContainer").style.transform = "translateY(400px)";
 
             URIndex.innerHTML = "";
 
@@ -352,7 +356,6 @@ socket.onmessage = (event) => {
             bottom.style.transform = "none";
             lowerPart.style.transform = "none";
             smallStats.style.transform = "none";
-            document.getElementById("modContainer").style.transform = 'none';
         }
     }
 
@@ -399,6 +402,10 @@ socket.onmessage = (event) => {
     }
     if (data.gameplay.score == 0) {
     }
+    tempBPM = data.menu.bm.stats.BPM.max;
+    if (data.menu.bm.stats.BPM.max !== data.menu.bm.stats.BPM.min)
+        tempBPM = `${data.menu.bm.stats.BPM.min} - ${data.menu.bm.stats.BPM.max}`;
+    BPM.innerText = data.menu.bm.stats.BPM.max;
 
     if (tempScore !== data.gameplay.score) {
         tempTotalAvg = 0;
@@ -413,10 +420,6 @@ socket.onmessage = (event) => {
         tempAcc = data.gameplay.accuracy;
         acc.innerHTML = tempAcc;
         animation.acc.update(acc.innerHTML);
-    }
-    if (tempBPM !== data.menu.bm.stats.BPM.min) {
-        tempBPM = data.menu.bm.stats.BPM.max;
-        BPM.innerHTML = tempBPM;
     }
 
     if (fullTime !== data.menu.bm.time.mp3) {
@@ -462,7 +465,7 @@ socket.onmessage = (event) => {
                 mods.id = tempMods.substr(i, 2);
                 mods.setAttribute("class", "mods");
                 mods.style.backgroundImage = `url('./static/mods/${tempMods.substr(i, 2)}.png')`;
-                mods.style.transform = `translateX(${(i / 2) * 30}px)`;
+                mods.style.transform = `none`;
                 document.getElementById("modContainer").appendChild(mods);
             }
             i++;
@@ -489,30 +492,146 @@ socket.onmessage = (event) => {
     if (tempMaxCombo !== data.gameplay.combo.max) {
         tempMaxCombo = data.gameplay.combo.max;
     }
-
+    if (data.gameplay.combo.max <= data.gameplay.combo.current) {
+        CMCombo.innerHTML = "";
+        CMCombo.style.opacity = 0;
+        CMCombo.style.width = "0px";
+        slash.innerHTML = "";
+    }
+    else if (data.gameplay.hits.sliderBreaks > 0 || data.gameplay.hits[0] > 0 && data.gameplay.combo.max >= data.gameplay.combo.current) {
+        CMCombo.innerHTML = tempMaxCombo;
+        slash.innerHTML = " / ";
+        CMCombo.style.opacity = 1;
+        CMCombo.style.width = "auto";
+     } else {
+        CMCombo.innerHTML = "";
+        CMCombo.style.opacity = 0;
+        CMCombo.style.width = "0px";
+        slash.innerHTML = "";
+    }
 
     if (data.gameplay.hits.hitErrorArray !== null) {
         tempSmooth = smooth(data.gameplay.hits.hitErrorArray, 4);
         OD = data.menu.bm.stats.memoryOD;
-
         if (tempHitErrorArrayLength !== tempSmooth.length) {
             tempHitErrorArrayLength = tempSmooth.length;
             for (var a = 0; a < tempHitErrorArrayLength; a++) {
                 tempAvg = tempAvg * 0.9 + tempSmooth[a] * 0.1;
             }
-            fullPos = (-10 * OD + 199.5);
-            tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / fullPos * 145;
+            fullPos = (-11 * OD + 450);
+            tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / fullPos * 450;
             currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
             avgHitError.style.transform = `translateX(${(tempAvg / fullPos) * 150}px)`;
-            l100.style.width = `${((-8 * OD + 139.5) / fullPos) * 300}px`;
-            l100.style.transform = `translateX(${(209.8 - ((-8 * OD + 139.5) / fullPos) * 300) / 2}px)`;
-            l300.style.width = `${((-6 * OD + 79.5) / fullPos) * 300}px`;
-            l300.style.transform = `translateX(${(119.5 - ((-6 * OD + 79.5) / fullPos) * 300) / 2}px)`;
+            if (tempMods.search("HR") !== -1) {
+                comboCont.style.transform = `translateX(${OD * 13}px)`;
+                ppCont.style.transform = `translateX(${OD * -13}px)`;
+            }
+            else if (tempMods.search("EZ") !== -1) {
+                comboCont.style.transform = `translateX(${OD * 5}px)`;
+                ppCont.style.transform = `translateX(${OD * -5}px)`;
+            }
+            else {
+                comboCont.style.transform = `translateX(${OD * 10}px)`;
+                ppCont.style.transform = `translateX(${OD * -10}px)`;
+            }
+            URbar.style.width = `${(-10 * OD + 450) / fullPos * 240}px`;
+            URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 240)) / 2}px)`;
+            l100.style.width = `${(-8 * OD + 315) / fullPos * 222}px`;
+            l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 515)) / 2}px)`;
+            l300.style.width = `${(-6 * OD + 180) / fullPos * 165}px`;
+            l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 730)) / 2}px)`;
+            //OD = 1
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 430}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 430)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 425}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 450)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 420}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 470)) / 2}px)`;
+            //
+            //OD = 2
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 410}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 410)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 400}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 455)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 390}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 480)) / 2}px)`;
+            //
+            //OD = 3
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 380}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 380)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 374}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 470)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 360}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 530)) / 2}px)`;
+            //
+            //OD = 4
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 360}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 360)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 350}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 475)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 330}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 555)) / 2}px)`;
+            //
+            //OD = 5
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 335}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 335)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 323}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 483)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 295}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 585)) / 2}px)`;
+            //
+            //OD = 6
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 315}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 315)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 298}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 483)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 265}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 610)) / 2}px)`;
+            //
+            //OD = 7
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 290}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 290)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 271}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 495)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 230}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 645)) / 2}px)`;
+            //
+            //OD = 8
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 265}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 265)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 247.5}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 507)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 195}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 680)) / 2}px)`;
+            //
+            //OD = 9
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 240}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 240)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 222}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 515)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 165}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 730)) / 2}px)`;
+            //
+            //OD = 10
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 220}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 220)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 195}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 520)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 125}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 745)) / 2}px)`;
+            //
+            //OD = 11
+            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 220}px`;
+            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 220)) / 2}px)`;
+            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 195}px`;
+            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 520)) / 2}px)`;
+            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 125}px`;
+            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 745)) / 2}px)`;
+            //
             let tick = document.createElement("div");
             tick.id = `tick${tempHitErrorArrayLength}`;
             tick.setAttribute("class", "tick");
             tick.style.opacity = 1;
-            tick.style.transform = `translateX(${tickPos}px)`;
             document.getElementById("URbar").appendChild(tick);
             for (var c = 0; c < 30; c++) {
                 if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
@@ -571,6 +690,10 @@ socket.onmessage = (event) => {
     if (tempPP !== data.gameplay.pp.current) {
         tempPP = data.gameplay.pp.current;
         pp.innerHTML = tempPP;
+    }
+    if (tempPPfc !== data.gameplay.pp.fc) {
+        tempPPfc = data.gameplay.pp.fc;
+        ppFC.innerHTML = tempPPfc;
     }
     if (tempStarsCurrent !== data.menu.bm.stats.SR) {
         tempStarsCurrent = data.menu.bm.stats.SR;
@@ -692,12 +815,18 @@ socket.onmessage = (event) => {
 
             if (interfaceID == 1 && gameState == 2) {
                 upperPart.style.transform = "translateY(-200px)";
+                bottom.style.transform = "translateY(200px)";
+                URIndex.style.transform = "translateY(-200px)";
+                URText.style.transform = "translateY(-200px)";
+                smallStats.style.transform = "translateX(1565px)";
+                lowerPart.style.transform = "translateX(1565px)";
             } else {
                 smallStats.style.transform = "none";
                 upperPart.style.transform = "none";
                 lowerPart.style.transform = "none";
                 bottom.style.transform = "none";
                 URIndex.style.transform = "none";
+                URText.style.transform = "none";
             }
         }
     }
@@ -807,10 +936,10 @@ async function setupUser(name) {
     let data;
     if (api != "") data = await getUserDataSet(name);
     else data = null;
-    //const avaImage = await getImage('24385367');
+    //const avaImage = await getImage('4223008');
     if (data === null) {
         data = {
-            user_id: "- Nhikaa -",
+            user_id: "baals",
             username: `${name}`,
             pp_rank: "0",
             pp_raw: "0",
@@ -831,7 +960,7 @@ async function setupUser(name) {
     tempcountryRank = data.pp_country_rank;
     tempPlayerPP = data.pp_raw;
 
-    if (tempUID !== "- Nhikaa -") {
+    if (tempUID !== "baals") {
         ava.style.backgroundImage = `url('https://a.ripple.moe/${tempUID}')`;
     } else {
         ava.style.backgroundImage = "url('./static/gamer.png')";
@@ -858,11 +987,11 @@ async function setupUser(name) {
         config.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.2)`;
         configSecond.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.7)`;
         
-        document.getElementById("combo").style.backgroundColor = `hsl(${avatarColor[0]})`;
-        document.getElementById("combo").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[0]})`;
+        document.getElementById("comboCont").style.backgroundColor = `hsl(${avatarColor[0]})`;
+        document.getElementById("comboCont").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[0]})`;
         // document.getElementById("comboBar").style.filter = `drop-shadow(0 0 10px hsl(${avatarColor[0]}))`;
-        document.getElementById("pp").style.backgroundColor = `hsl(${avatarColor[1]})`;
-        document.getElementById("pp").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[1]})`;
+        document.getElementById("ppCont").style.backgroundColor = `hsl(${avatarColor[1]})`;
+        document.getElementById("ppCont").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[1]})`;
         // document.getElementById("ppBar").style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
 
         // combo.style.borderColor = `hsl(${avatarColor[0]})`;
@@ -1285,3 +1414,4 @@ async function getMapDataSet(beatmapID) {
         console.error(error);
     }
 }
+
