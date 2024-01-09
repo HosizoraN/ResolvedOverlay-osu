@@ -139,46 +139,39 @@
 }
 #URmidbar{
 	position: absolute;
-	left: 224px;
+	bottom: 7px;
 	background-color: white;
-	width: 4px;
-	height: 30px;
-	top: -10px;
+	width: 5px;
+	height: 25px;
 	border-radius: 5px;
 	transition: ease-out 500ms;
 }
 
 #avgHitError {
 	position: absolute;
-	width: 20px;
-	height: 20px;
-	top: 15px;
-	left: 215.5px;
+	bottom: 0;
+	width: 10px;
+	height: 10px;
 	background-image: url("../static/arrowtick.png");
 	background-size: 100%;
 	transition: ease-out 100ms;
 	transform-origin: 50% 50%;
-	-webkit-filter: drop-shadow(5px 5px 5px #222222);
-	filter: drop-shadow(5px 5px 5px #222222);
-}
-#URbar2{
-	display: none;
-	position: absolute;
-	left: 735px;
-	bottom: 20px;
-	width: 450px;
-	height: 10px;
 }
 #URbar {
+	display: flex;
+	width: 100%;
+	transition: ease-in-out 500ms;
+	z-index: -1;
+	align-items: center;
+	justify-content: center;
+}
+#l50 {
 	position: absolute;
-	display: none;
-	left: 735px;
-	bottom: 20px;
-	width: 450px;
+	bottom: 15px;
+	width: 445px;
 	height: 10px;
 	background-color: #daae46;
 	border-radius: 5px;
-	box-shadow: 0 0 9px black;
 	transition: ease-in-out 500ms;
 	z-index: -1;
 }
@@ -186,8 +179,8 @@
 #l100 {
 	position: absolute;
 	height: 10px;
-	width: 315px;
-	left: 68px;
+	width: 312px;
+	bottom: 15px;
 	background-color: #57e313;
 	transition: ease-in-out 500ms;
 	z-index: -1;
@@ -196,28 +189,26 @@
 #l300 {
 	position: absolute;
 	height: 10px;
-	width: 180px;
-	left: 135px;
+	width: 177px;
+	bottom: 15px;
 	background-color: #32bce9;
 	transition: ease-in-out 500ms;
 	z-index: -1;
 }
-
 .tick {
 	position: absolute;
-	top: -13.5px;
-	height: 35px;
-	width: 6px;
+	bottom: 5.5px;
+	height: 30px;
+	width: 5px;
 	background-color: rgba(255 255 255 / .3);
-	left: 121px;
-	border-radius: 3px;
+	border-radius: 5px;
 	transition: ease-out 500ms;
 	z-index: -1;
 }
 
 #URIndex {
 	position: absolute;
-	bottom: 50px;
+	bottom: 55px;
 	left: 0;
 	right: 0;
 	font-size: 35px;
@@ -231,7 +222,7 @@
 }
 #URText{
 	position: absolute;
-	bottom: 25px;
+	bottom: 30px;
 	left: 0;
 	right: 0;
 	font-size: 22px;

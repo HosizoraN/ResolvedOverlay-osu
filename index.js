@@ -84,6 +84,7 @@ let avgHitError = document.getElementById("avgHitError");
 
 let l300 = document.getElementById("l300");
 let l100 = document.getElementById("l100");
+let l50 = document.getElementById("l50");
 let URIndex = document.getElementById("URIndex");
 
 let leaderboard = document.getElementById("leaderboard");
@@ -261,13 +262,13 @@ let playerPosition;
 
 let currentErrorValue;
 
-let error_h300 = 25;
-let error_h100 = 63;
+let error_h300 = 20;
+let error_h100 = 60;
 let error_h50 = 0;
 
 function calculate_od(temp){
-    error_h300 = 180 - (2 * temp);
-    error_h100 = 315 - (2 * temp);
+    error_300 = 180 - (3 * temp);
+    error_100 = 315 - (6 * temp);
 }
 
 window.onload = function () {
@@ -324,8 +325,9 @@ socket.onmessage = (event) => {
 
             tickPos = 0;
             tempAvg = 0;
-            URbar.style.width = "450px";
             URbar.style.transform ="translateX(0)";
+            l50.style.width = "450px";
+            l50.style.transform ="translateX(0)";
             l300.style.width = "180px";
             l300.style.transform = "translateX(0)";
             l100.style.width = "315px";
@@ -356,6 +358,7 @@ socket.onmessage = (event) => {
             bottom.style.transform = "none";
             lowerPart.style.transform = "none";
             smallStats.style.transform = "none";
+            URbar.style.transform ="none";
         }
     }
 
@@ -518,147 +521,62 @@ socket.onmessage = (event) => {
             for (var a = 0; a < tempHitErrorArrayLength; a++) {
                 tempAvg = tempAvg * 0.9 + tempSmooth[a] * 0.1;
             }
-            fullPos = (-11 * OD + 450);
-            tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / fullPos * 450;
+            fullPos = (-10 * OD + 199.5);
+            tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / fullPos * 145;
             currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
             avgHitError.style.transform = `translateX(${(tempAvg / fullPos) * 150}px)`;
             if (tempMods.search("HR") !== -1) {
-                comboCont.style.transform = `translateX(${OD * 13}px)`;
-                ppCont.style.transform = `translateX(${OD * -13}px)`;
+                comboCont.style.transform = `translateX(${OD * 12}px)`;
+                ppCont.style.transform = `translateX(${OD * -12}px)`;
+                l50.style.width = `${450 - (24 * OD)}px`;
+                l100.style.width = `${315 - (19.5 * OD)}px`;
+                l300.style.width = `${180 - (15 * OD)}px`;
             }
             else if (tempMods.search("EZ") !== -1) {
                 comboCont.style.transform = `translateX(${OD * 5}px)`;
                 ppCont.style.transform = `translateX(${OD * -5}px)`;
+                l50.style.width = `${450 - (11 * OD)}px`;
+                l100.style.width = `${315 - (8.7 * OD)}px`;
+                l300.style.width = `${180 - (6.5 * OD)}px`;
             }
             else {
-                comboCont.style.transform = `translateX(${OD * 10}px)`;
-                ppCont.style.transform = `translateX(${OD * -10}px)`;
+                comboCont.style.transform = `translateX(${OD * 11}px)`;
+                ppCont.style.transform = `translateX(${OD * -11}px)`;
+                l50.style.width = `${450 - (22 * OD)}px`;
+                l100.style.width = `${315 - (18 * OD)}px`;
+                l300.style.width = `${180 - (13.5 * OD)}px`;
             }
-            URbar.style.width = `${(-10 * OD + 450) / fullPos * 240}px`;
-            URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 240)) / 2}px)`;
-            l100.style.width = `${(-8 * OD + 315) / fullPos * 222}px`;
-            l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 515)) / 2}px)`;
-            l300.style.width = `${(-6 * OD + 180) / fullPos * 165}px`;
-            l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 730)) / 2}px)`;
-            //OD = 1
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 430}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 430)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 425}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 450)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 420}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 470)) / 2}px)`;
-            //
-            //OD = 2
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 410}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 410)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 400}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 455)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 390}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 480)) / 2}px)`;
-            //
-            //OD = 3
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 380}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 380)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 374}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 470)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 360}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 530)) / 2}px)`;
-            //
-            //OD = 4
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 360}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 360)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 350}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 475)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 330}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 555)) / 2}px)`;
-            //
-            //OD = 5
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 335}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 335)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 323}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 483)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 295}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 585)) / 2}px)`;
-            //
-            //OD = 6
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 315}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 315)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 298}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 483)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 265}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 610)) / 2}px)`;
-            //
-            //OD = 7
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 290}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 290)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 271}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 495)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 230}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 645)) / 2}px)`;
-            //
-            //OD = 8
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 265}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 265)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 247.5}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 507)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 195}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 680)) / 2}px)`;
-            //
-            //OD = 9
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 240}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 240)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 222}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 515)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 165}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 730)) / 2}px)`;
-            //
-            //OD = 10
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 220}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 220)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 195}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 520)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 125}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 745)) / 2}px)`;
-            //
-            //OD = 11
-            //          URbar.style.width = `${(-10 * OD + 450) / fullPos * 220}px`;
-            //          URbar.style.transform = `translateX(${(450 - ((-10 * OD + 450) / fullPos * 220)) / 2}px)`;
-            //          l100.style.width = `${(-8 * OD + 315) / fullPos * 195}px`;
-            //          l100.style.transform = `translateX(${(315 - ((-8 * OD + 315) / fullPos * 520)) / 2}px)`;
-            //          l300.style.width = `${(-6 * OD + 180) / fullPos * 125}px`;
-            //          l300.style.transform = `translateX(${(180 - ((-6 * OD + 180) / fullPos * 745)) / 2}px)`;
-            //
-            let tick = document.createElement("div");
-            tick.id = `tick${tempHitErrorArrayLength}`;
-            tick.setAttribute("class", "tick");
-            tick.style.opacity = 1;
-            document.getElementById("URbar").appendChild(tick);
             for (var c = 0; c < 30; c++) {
                 if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
+                    let tick = document.createElement("div");
+                    tick.id = `tick${tempHitErrorArrayLength}`;
+                    tick.setAttribute("class", "tick");
                     tick.style.opacity = 1;
                     tick.style.transform = `translateX(${tickPos}px)`;
+                    document.getElementById("URbar").appendChild(tick);
 
                     if(currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300){
-                        tick.style.backgroundColor = '#00FFEC';
+                        tick.style.backgroundColor = '#6fffff';
                         tick.style.opacity = 0.4
                     }
                     else if(currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100){
-                        tick.style.backgroundColor = '#68FF00';
+                        tick.style.backgroundColor = '#6fff6f';
                         tick.style.opacity = 0.4
                     }
                     else {
-                        tick.style.backgroundColor = '#FFC100';
+                        tick.style.backgroundColor = '#ffc46f';
                         tick.style.opacity = 0.4
                     }
-                    
-                function fade() {
-                    tick.style.opacity = 0;
-                }
-                function remove() {
-                    document.getElementById("URbar").removeChild(tick);
-                }
-                setTimeout(fade, 2000);
-                setTimeout(remove, 2500);
+
+                    function fade() {
+                        tick.style.opacity = 0;
+                    }
+        
+                    function remove() {
+                        document.getElementById("URbar").removeChild(tick);
+                    }
+                    setTimeout(fade, 5000);
+                    setTimeout(remove, 5500);
                 }
             }
         }

@@ -68,6 +68,7 @@ html {
 	background-size: 100%;
 	background-position: 50% 50%;
 	z-index: 2;
+	background-color: black;
 	transition: ease-in-out 500ms;
 	opacity: 0;
 }
