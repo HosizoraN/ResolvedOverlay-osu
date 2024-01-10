@@ -41,7 +41,7 @@ async function fetchData() {
             }
         }
         for (var i = 0; i < 5; i++) {
-            document.getElementById(`bg${i + 1}`).style.backgroundImage = `owo`;
+            document.getElementById(`bg${i + 1}`).style.backgroundImage = ``;
             document.getElementById(`topArtistTitle${i + 1}`).innerHTML = `Offline Play`;
             document.getElementById(`topDiff${i + 1}`).innerHTML = `No Diff Data`;
             document.getElementById(`topPP${i + 1}`).innerHTML = `No PP`
@@ -116,7 +116,7 @@ async function setupRankingPanel() {
             rankedStatus.style.backgroundImage = `url('./static/state/qualified.png')`;
             break;
         default:
-            rankedStatus.style.backgroundImage = `url('./static/state/unranked.png'~)`;
+            rankedStatus.style.backgroundImage = `url('./static/state/unranked.png')`;
             break;
     }
 

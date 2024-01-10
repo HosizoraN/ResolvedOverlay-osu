@@ -75,6 +75,7 @@ let hp = document.getElementById("hp");
 
 let progressChart = document.getElementById("progress");
 let strainGraph = document.getElementById("strainGraph");
+let sMods = document.getElementById("sMods");
 
 // UR
 
@@ -325,7 +326,7 @@ socket.onmessage = (event) => {
 
             tickPos = 0;
             tempAvg = 0;
-            URbar.style.transform ="translateX(0)";
+            URCont.style.transform ="translateY(200px)";
             l50.style.width = "450px";
             l50.style.transform ="translateX(0)";
             l300.style.width = "180px";
@@ -358,7 +359,7 @@ socket.onmessage = (event) => {
             bottom.style.transform = "none";
             lowerPart.style.transform = "none";
             smallStats.style.transform = "none";
-            URbar.style.transform ="none";
+            URCont.style.transform ="none";
         }
     }
 
@@ -406,8 +407,6 @@ socket.onmessage = (event) => {
     if (data.gameplay.score == 0) {
     }
     tempBPM = data.menu.bm.stats.BPM.max;
-    if (data.menu.bm.stats.BPM.max !== data.menu.bm.stats.BPM.min)
-        tempBPM = `${data.menu.bm.stats.BPM.min} - ${data.menu.bm.stats.BPM.max}`;
     BPM.innerText = data.menu.bm.stats.BPM.max;
 
     if (tempScore !== data.gameplay.score) {
@@ -485,6 +484,41 @@ socket.onmessage = (event) => {
             } else {
                 OD = (500 / 667) * data.menu.bm.stats.OD + -2210 / 667;
             }
+        }
+        if (tempMods.search("NM") !== -1 && tempRankedStatus !== 4 || tempMods.search("NM") !== -1 && tempRankedStatus !== 7 || tempMods.search("NM") !== -1 && tempRankedStatus !== 6 || tempMods.search("SD") !== -1 && tempRankedStatus !== 4 || tempMods.search("SD") !== -1 && tempRankedStatus !== 7 || tempMods.search("SD") !== -1 && tempRankedStatus !== 6 || tempMods.search("PF") !== -1 && tempRankedStatus !== 4 || tempMods.search("PF") !== -1 && tempRankedStatus !== 7 || tempMods.search("PF") !== -1 && tempRankedStatus !== 6 || tempMods.search("FL") !== -1 && tempRankedStatus !== 4 || tempMods.search("FL") !== -1 && tempRankedStatus !== 7 || tempMods.search("FL") !== -1 && tempRankedStatus !== 6){
+            sMods.innerHTML = " ";
+            sMods.style.opacity = 1;
+        }
+        else if (tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 4 || tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 7 || tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 6) {
+            sMods.innerHTML = "(HD)DT(HR)";
+            sMods.style.opacity = 1;
+        }
+        else if (tempMods.search("NC") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 4 || tempMods.search("NC") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 7 || tempMods.search("NC") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 6) {
+            sMods.innerHTML = "(HD)NC(HR)";
+            sMods.style.opacity = 1;
+        }
+        else if (tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 4 || tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 7 || tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 6 || tempMods.search("NC") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 4 || tempMods.search("NC") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 7 || tempMods.search("NC") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 6) {
+            sMods.innerHTML = "EZDT/NC(HD)(FL)";
+            sMods.style.opacity = 1;
+        }
+        else if (tempMods.search("DT") !== -1 && tempRankedStatus !== 4 || tempMods.search("DT") !== -1 && tempRankedStatus !== 7 || tempMods.search("DT") !== -1 && tempRankedStatus !== 6) {
+            sMods.innerHTML = "(HD)DT/NC";
+            sMods.style.opacity = 1;
+        }
+        else if (tempMods.search("HR") !== -1 && tempRankedStatus !== 4 || tempMods.search("HR") !== -1 && tempRankedStatus !== 7 || tempMods.search("HR") !== -1 && tempRankedStatus !== 6) {
+            sMods.innerHTML = "(HD)HR";
+            sMods.style.opacity = 1;
+        }
+        else if (tempMods.search("EZ") !== -1 && tempRankedStatus !== 4 || tempMods.search("EZ") !== -1 && tempRankedStatus !== 7 || tempMods.search("EZ") !== -1 && tempRankedStatus !== 6) {
+            sMods.innerHTML = "EZ(HD)(FL)";
+            sMods.style.opacity = 1;
+        }
+        else if (tempMods.search("HD") !== -1 && tempRankedStatus !== 4 || tempMods.search("HD") !== -1 && tempRankedStatus !== 7 || tempMods.search("HD") !== -1 && tempRankedStatus !== 6) {
+            sMods.innerHTML = "NM/HD/TD";
+            sMods.style.opacity = 1;
+        }
+        else {
+            sMods.style.opacity = 0;
         }
     }
     if (tempCombo !== data.gameplay.combo.current) {
@@ -575,8 +609,8 @@ socket.onmessage = (event) => {
                     function remove() {
                         document.getElementById("URbar").removeChild(tick);
                     }
-                    setTimeout(fade, 5000);
-                    setTimeout(remove, 5500);
+                    setTimeout(fade, 2000);
+                    setTimeout(remove, 5000);
                 }
             }
         }
@@ -640,7 +674,7 @@ socket.onmessage = (event) => {
 
         if (tempTimeCurrent >= tempTimeFull - 10000 && gameState === 2 && !apiGetSet) fetchData();
 
-        if (tempTimeCurrent >= tempTimeFull && gameState === 2) rankingPanelBG.style.opacity = 1;
+        if (tempTimeCurrent >= tempTimeFull + 200 && gameState === 2) rankingPanelBG.style.opacity = 1;
 
         if (gameState === 7) {
             if (!rankingPanelSet) setupRankingPanel();
@@ -738,6 +772,7 @@ socket.onmessage = (event) => {
                 URText.style.transform = "translateY(-200px)";
                 smallStats.style.transform = "translateX(1565px)";
                 lowerPart.style.transform = "translateX(1565px)";
+                URCont.style.transform = "translateY(200px)";
             } else {
                 smallStats.style.transform = "none";
                 upperPart.style.transform = "none";
@@ -745,6 +780,7 @@ socket.onmessage = (event) => {
                 bottom.style.transform = "none";
                 URIndex.style.transform = "none";
                 URText.style.transform = "none";
+                URCont.style.transform = "none";
             }
         }
     }
@@ -900,16 +936,16 @@ async function setupUser(name) {
         BarRight.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
 
         smallStats.style.backgroundColor = `hsl(${avatarColor[0]})`;
-        smallStats.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[0]})`;
+        sMods.style.backgroundColor = `hsl(${avatarColor[0]})`;
 
         config.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.2)`;
         configSecond.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.7)`;
         
         document.getElementById("comboCont").style.backgroundColor = `hsl(${avatarColor[0]})`;
-        document.getElementById("comboCont").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[0]})`;
+        document.getElementById("comboCont").style.boxShadow = `0 0 5px 2px hsl(${avatarColor[0]})`;
         // document.getElementById("comboBar").style.filter = `drop-shadow(0 0 10px hsl(${avatarColor[0]}))`;
         document.getElementById("ppCont").style.backgroundColor = `hsl(${avatarColor[1]})`;
-        document.getElementById("ppCont").style.boxShadow = `0 0 10px 2px hsl(${avatarColor[1]})`;
+        document.getElementById("ppCont").style.boxShadow = `0 0 5px 2px hsl(${avatarColor[1]})`;
         // document.getElementById("ppBar").style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
 
         // combo.style.borderColor = `hsl(${avatarColor[0]})`;

@@ -278,10 +278,10 @@ html {
 #smallStats{
 	width: 330px;
 	height: 50px;
-	font-size: 25px;
+	font-size: 23px;
 	border-radius: 10px;
 	position: absolute;
-	bottom: 120px;
+	bottom: 130px;
 	left: 15px;
 	background-color: #161616;
 	border-radius: 10px;
@@ -292,28 +292,24 @@ html {
 	position: absolute;
 	left: 15px;
 	top: 10px;
-	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 #bpmd{
 	position: absolute;
 	text-align: right;
-	right: 20px;
+	right: 15px;
 	top: 10px;
-	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
 #strainGraph {
 	position: absolute;
 	height: 120px;
 	left: 8px;
-	top: -120px;
+	bottom: 60px;
 	transition: ease 500ms;
 	z-index: -1;
-	border-top-left-radius: 30px;
-	border-top-right-radius: 30px;
 }
 
 #progress {
-	bottom: 0px;
+	bottom: 0;
 	position: absolute;
 	width: 500px;
 	height: 120px;
@@ -324,7 +320,7 @@ html {
 #canvasSecond {
 	position: absolute;
 	height: 120px;
-	bottom: 0px;
+	bottom: 0;
 }
 
 #lowerPart {
@@ -336,25 +332,43 @@ html {
 }
 #accInfo {
 	position: absolute;
-	left:15px;
-	background-image: url("../static/hits.png");
-	background-size: 99%;
-	bottom: 90px;
+	left: 15px;
+	bottom: 100px;
+	display: flex;
 	width: 330px;
-	height: 30px;
+	height: 7px;
+	justify-content: space-around;
+	border-radius: 10px;
+	font-size: 22px;
+	background: rgb(150,255,168);
+	background: linear-gradient(90deg, rgba(150,255,168,1) 25%, rgba(255,254,142,1) 26%, rgba(255,254,142,1) 50%, rgba(255,121,121,1) 51%, rgba(255,121,121,1) 75%, rgba(255,255,255,1) 76%);
 	transition: ease-in-out 500ms;
 }
-#hitcounter{
-	position: absolute;
+#h100Cont,
+#h50Cont,
+#h0Cont,
+#hsbCont{
 	display: flex;
-	left: 3px;
-	justify-content: space-around;
-	width: 320px;
-	top: 25px;
+	align-items: center;
+	justify-content: center;
+	width: 80px;
+	height: 50px;
 	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
-.text{
-    display: flex;
-	font-size: 25px;
-    justify-content: center;
+#sModsCont{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 330px;
+	height: 90px;
+}
+#sMods {
+	position: absolute;
+	padding: 3px 10px 8px 10px;
+	font-size: 15px;
+	border-radius: 10px;
+	background-color: #161616;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+	transition: ease-out 500ms;
+	opacity: 1;
 }

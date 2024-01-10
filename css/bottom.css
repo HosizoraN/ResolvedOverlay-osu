@@ -157,12 +157,17 @@
 	transition: ease-out 100ms;
 	transform-origin: 50% 50%;
 }
+#URCont{
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+}
 #URbar {
 	display: flex;
 	width: 100%;
+	bottom: 0;
 	transition: ease-in-out 500ms;
 	z-index: -1;
-	align-items: center;
 	justify-content: center;
 }
 #l50 {
