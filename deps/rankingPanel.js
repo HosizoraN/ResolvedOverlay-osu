@@ -91,7 +91,7 @@ async function setupRankingPanel() {
     player.style.transform = "translateX(0)";
     result.style.transform = "translateX(0)";
     rankingResult.style.transform = "translateY(0)";
-    document.getElementById("modContainer").style.transform = "none";
+    document.getElementById("modContainer").style.transform = "translateY(0)";
 
     playerName.innerHTML = tempUsername;
 
@@ -130,7 +130,7 @@ async function setupRankingPanel() {
     r0.innerHTML = temp0;
     rsb.innerHTML = tempsliderBreaks;
     sBPM.innerHTML = `${tempBPM} BPM`;
-    ppResult.innerHTML = tempPP + 'pp';
+    ppResult.innerHTML = tempPP.toFixed(0) + 'pp';
 
     resultRecorder.style.transform = 'none';
 }
@@ -146,6 +146,7 @@ async function deRankingPanel() {
     player.style.transform = "translateX(-620px)";
     result.style.transform = "translateX(620px)";
     rankingResult.style.transform = "translateY(800px)";
+    document.getElementById("modContainer").style.transform = "translateY(200px)";
 
     nowPlayingContainer.style.opacity = 1;
     document.getElementById("strainGraph").style.opacity = 1;

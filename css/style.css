@@ -28,6 +28,8 @@ html {
 	padding: 0;
 	margin: 0;
 	overflow: hidden;
+	/* background-color: #15151e; */
+	z-index: -5;
 }
 
 #main {
@@ -35,13 +37,13 @@ html {
 	font-family: GothicRD;
 	font-weight: normal;
 	color: white;
-	/* background-image: url('../static/Background.jpg'); */
-	/* background-color: #15151e; */
+	/* background-image: url('../static/Background.jpg');
+	background-color: #15151e; */
 	background-size: 100%;
 	width: 1920px;
 	height: 1080px;
 	position: relative;
-	z-index: -1;
+	z-index: 0;
 	overflow: hidden;
 }
 
@@ -281,7 +283,7 @@ html {
 	font-size: 23px;
 	border-radius: 10px;
 	position: absolute;
-	bottom: 130px;
+	bottom: 120px;
 	left: 15px;
 	background-color: #161616;
 	border-radius: 10px;

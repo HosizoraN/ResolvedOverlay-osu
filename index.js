@@ -405,8 +405,8 @@ socket.onmessage = (event) => {
     }
     if (data.gameplay.score == 0) {
     }
-    tempBPM = data.menu.bm.stats.BPM.max;
-    BPM.innerText = data.menu.bm.stats.BPM.max;
+    tempBPM = data.menu.bm.stats.BPM.common.toFixed(0);
+    BPM.innerText = data.menu.bm.stats.BPM.common.toFixed(0);
 
     if (tempScore !== data.gameplay.score) {
         tempTotalAvg = 0;
@@ -559,11 +559,11 @@ socket.onmessage = (event) => {
             currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
             if (tempMods.search("HR") !== -1) {
-                comboCont.style.transform = `translateX(${OD * 12}px)`;
-                ppCont.style.transform = `translateX(${OD * -12}px)`;
-                l50.style.width = `${450 - (24 * OD)}px`;
-                l100.style.width = `${315 - (19.5 * OD)}px`;
-                l300.style.width = `${180 - (14.5 * OD)}px`;
+                comboCont.style.transform = `translateX(${OD * 11}px)`;
+                ppCont.style.transform = `translateX(${OD * -11}px)`;
+                l50.style.width = `${450 - (23 * OD)}px`;
+                l100.style.width = `${315 - (18.5 * OD)}px`;
+                l300.style.width = `${180 - (14 * OD)}px`;
             }
             else if (tempMods.search("EZ") !== -1) {
                 comboCont.style.transform = `translateX(${OD * 5}px)`;
@@ -671,17 +671,17 @@ socket.onmessage = (event) => {
             recorderName.style.transform = "none";
         }
 
-        if (tempTimeCurrent >= tempTimeFull - 10000 && gameState === 2 && !apiGetSet) fetchData();
+        if (tempTimeCurrent >= tempTimeFull - 50000 && gameState === 2 && !apiGetSet) fetchData();
 
-        if (tempTimeCurrent >= tempTimeMP3 - 2000 && gameState === 2) rankingPanelBG.style.opacity = 1;
+        if (tempTimeCurrent >= tempTimeFull + 200 && gameState === 2 || tempTimeCurrent >= tempTimeMP3 - 2000 && gameState === 2) rankingPanelBG.style.opacity = 1;
 
-        if (rankingPanelBG.style.opacity = 1 && gameState === 2 && tempTimeCurrent >= tempTimeMP3 - 2800 || gameState === 7) {
+        if (rankingPanelBG.style.opacity !== 1 && gameState === 2 && tempTimeCurrent >= tempTimeFull + 700 || gameState === 7) {
             if (!rankingPanelSet) setupRankingPanel();
             if (tempGrade !== "")
                 if (!isHidden) rankingResult.style.backgroundImage = `url('./static/rankings/${tempGrade}.png')`;
                 else if (tempGrade === "S" || tempGrade === "SS") rankingResult.style.backgroundImage = `url('./static/rankings/${tempGrade}H.png')`;
                 else rankingResult.style.backgroundImage = `url('./static/rankings/${tempGrade}.png')`;
-        } else if (!(tempTimeCurrent >= tempTimeFull - 500 && gameState === 2)) rankingPanelBG.style.opacity = 0 && !deRankingPanel;
+        } else if (!(tempTimeCurrent >= tempTimeFull - 500 && gameState === 2)) rankingPanelBG.style.opacity = 0 && deRankingPanel();
 
         if (gameState == 2) {
             upperPart.style.transform = "none";
