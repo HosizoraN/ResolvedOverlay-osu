@@ -318,7 +318,7 @@ socket.onmessage = (event) => {
 
     if (gameState !== data.menu.state) {
         gameState = data.menu.state;
-        calculate_od(data.menu.bm.stats.memoryOD);
+        calculate_od(data.menu.bm.stats.OD);
         if (gameState !== 2) {
             if (gameState !== 7) deRankingPanel();
             upperPart.style.transform = "translateY(-200px)";
@@ -558,12 +558,38 @@ socket.onmessage = (event) => {
             tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / 450 * 510;
             currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
-            if (tempMods.search("HR") !== -1) {
+            comboCont.style.transform = `translateX(${OD * 11}px)`;
+            ppCont.style.transform = `translateX(${OD * -11}px)`;
+            l50.style.width = `${450 - (22 * OD)}px`;
+            l100.style.width = `${315 - (18 * OD)}px`;
+            l300.style.width = `${180 - (13.5 * OD)}px`;
+            if (tempMods.search("HR") !== -1 && tempMods.search("DT") !== -1 && data.menu.bm.stats.OD >= 11 || tempMods.search("HR") !== -1 && tempMods.search("NC") !== -1 && data.menu.bm.stats.OD >= 11) {
+                comboCont.style.transform = `translateX(${OD * 13}px)`;
+                ppCont.style.transform = `translateX(${OD * -13}px)`;
+                l50.style.width = `${450 - (27 * OD)}px`;
+                l100.style.width = `${315 - (21.5 * OD)}px`;
+                l300.style.width = `${180 - (16.5 * OD)}px`;
+            }
+            else if (tempMods.search("HR") !== -1 && OD == 10) {
                 comboCont.style.transform = `translateX(${OD * 11}px)`;
                 ppCont.style.transform = `translateX(${OD * -11}px)`;
-                l50.style.width = `${450 - (23 * OD)}px`;
-                l100.style.width = `${315 - (18.5 * OD)}px`;
-                l300.style.width = `${180 - (14 * OD)}px`;
+                l50.style.width = `${450 - (22 * OD)}px`;
+                l100.style.width = `${315 - (18 * OD)}px`;
+                l300.style.width = `${180 - (13.5 * OD)}px`;
+            }
+            else if (tempMods.search("HR") !== -1 && data.menu.bm.stats.OD == 10) {
+                comboCont.style.transform = `translateX(${OD * 13}px)`;
+                ppCont.style.transform = `translateX(${OD * -13}px)`;
+                l50.style.width = `${450 - (27 * OD)}px`;
+                l100.style.width = `${315 - (22 * OD)}px`;
+                l300.style.width = `${180 - (17 * OD)}px`;
+            }
+            else if (tempMods.search("HR") !== -1 && data.menu.bm.stats.OD <= 10) {
+                comboCont.style.transform = `translateX(${OD * 14}px)`;
+                ppCont.style.transform = `translateX(${OD * -14}px)`;
+                l50.style.width = `${450 - (30 * OD)}px`;
+                l100.style.width = `${315 - (24 * OD)}px`;
+                l300.style.width = `${180 - (18 * OD)}px`;
             }
             else if (tempMods.search("EZ") !== -1) {
                 comboCont.style.transform = `translateX(${OD * 5}px)`;
@@ -571,13 +597,6 @@ socket.onmessage = (event) => {
                 l50.style.width = `${450 - (11 * OD)}px`;
                 l100.style.width = `${315 - (8.7 * OD)}px`;
                 l300.style.width = `${180 - (6.5 * OD)}px`;
-            }
-            else {
-                comboCont.style.transform = `translateX(${OD * 11}px)`;
-                ppCont.style.transform = `translateX(${OD * -11}px)`;
-                l50.style.width = `${450 - (22 * OD)}px`;
-                l100.style.width = `${315 - (18 * OD)}px`;
-                l300.style.width = `${180 - (13.5 * OD)}px`;
             }
             for (var c = 0; c < 30; c++) {
                 if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
