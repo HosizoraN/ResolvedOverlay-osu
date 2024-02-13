@@ -318,7 +318,6 @@ socket.onmessage = (event) => {
 
     if (gameState !== data.menu.state) {
         gameState = data.menu.state;
-        calculate_od(data.menu.bm.stats.OD);
         if (gameState !== 2) {
             if (gameState !== 7) deRankingPanel();
             upperPart.style.transform = "translateY(-200px)";
@@ -337,6 +336,7 @@ socket.onmessage = (event) => {
             comboCont.style.transform = "none";
             ppCont.style.transform = "none";
             avgHitError.style.transform = "translateX(0)";
+
 
             bottom.style.transform = "translateY(300px)";
             URIndex.style.transform = "none";
@@ -455,6 +455,8 @@ socket.onmessage = (event) => {
 
         if (tempMods.search("HD") !== -1) 
             isHidden = true;
+        else if (tempMods.search("FL") !== -1)
+            isHidden = true;
         else
             isHidden = false;
 
@@ -557,39 +559,22 @@ socket.onmessage = (event) => {
             fullPos = (-11 * OD + 225);
             tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / 450 * 510;
             currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
+            calculate_od(data.menu.bm.stats.memoryOD);
+            ppCont.style.width = "auto";
+            comboCont.style.width = "auto";
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
             comboCont.style.transform = `translateX(${OD * 11}px)`;
             ppCont.style.transform = `translateX(${OD * -11}px)`;
             l50.style.width = `${450 - (22 * OD)}px`;
             l100.style.width = `${315 - (18 * OD)}px`;
             l300.style.width = `${180 - (13.5 * OD)}px`;
-            if (tempMods.search("HR") !== -1 && tempMods.search("DT") !== -1 && data.menu.bm.stats.OD >= 11 || tempMods.search("HR") !== -1 && tempMods.search("NC") !== -1 && data.menu.bm.stats.OD >= 11) {
-                comboCont.style.transform = `translateX(${OD * 13}px)`;
-                ppCont.style.transform = `translateX(${OD * -13}px)`;
-                l50.style.width = `${450 - (27 * OD)}px`;
-                l100.style.width = `${315 - (21.5 * OD)}px`;
-                l300.style.width = `${180 - (16.5 * OD)}px`;
-            }
-            else if (tempMods.search("HR") !== -1 && OD == 10) {
-                comboCont.style.transform = `translateX(${OD * 11}px)`;
-                ppCont.style.transform = `translateX(${OD * -11}px)`;
-                l50.style.width = `${450 - (22 * OD)}px`;
-                l100.style.width = `${315 - (18 * OD)}px`;
-                l300.style.width = `${180 - (13.5 * OD)}px`;
-            }
-            else if (tempMods.search("HR") !== -1 && data.menu.bm.stats.OD == 10) {
-                comboCont.style.transform = `translateX(${OD * 13}px)`;
-                ppCont.style.transform = `translateX(${OD * -13}px)`;
-                l50.style.width = `${450 - (27 * OD)}px`;
-                l100.style.width = `${315 - (22 * OD)}px`;
-                l300.style.width = `${180 - (17 * OD)}px`;
-            }
-            else if (tempMods.search("HR") !== -1 && data.menu.bm.stats.OD <= 10) {
-                comboCont.style.transform = `translateX(${OD * 14}px)`;
-                ppCont.style.transform = `translateX(${OD * -14}px)`;
-                l50.style.width = `${450 - (30 * OD)}px`;
-                l100.style.width = `${315 - (24 * OD)}px`;
-                l300.style.width = `${180 - (18 * OD)}px`;
+            if (tempMods.search("HR") !== -1 && data.menu.bm.stats.OD >= 10) {
+                calculate_od(data.menu.bm.stats.OD);
+                comboCont.style.transform = `translateX(${10 * 11}px)`;
+                ppCont.style.transform = `translateX(${10 * -11}px)`;
+                l50.style.width = `${450 - (22 * 10)}px`;
+                l100.style.width = `${315 - (18 * 10)}px`;
+                l300.style.width = `${180 - (13.5 * 10)}px`;
             }
             else if (tempMods.search("EZ") !== -1) {
                 comboCont.style.transform = `translateX(${OD * 5}px)`;
@@ -609,17 +594,16 @@ socket.onmessage = (event) => {
 
                     if(currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300){
                         tick.style.backgroundColor = '#6fffff';
-                        tick.style.opacity = 0.4
+                        tick.style.opacity = 0.4;
                     }
                     else if(currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100){
-                        tick.style.backgroundColor = '#6fff6f';
-                        tick.style.opacity = 0.4
+                        tick.style.backgroundColor = '#74FF66';
+                        tick.style.opacity = 0.4;
                     }
                     else {
-                        tick.style.backgroundColor = '#ffc46f';
-                        tick.style.opacity = 0.4
+                        tick.style.backgroundColor = '#FFCA98';
+                        tick.style.opacity = 0.4;
                     }
-
                     function fade() {
                         tick.style.opacity = 0;
                     }
@@ -785,12 +769,6 @@ socket.onmessage = (event) => {
 
             if (interfaceID == 1 && gameState == 2) {
                 upperPart.style.transform = "translateY(-200px)";
-                bottom.style.transform = "translateY(200px)";
-                URIndex.style.transform = "translateY(-200px)";
-                URText.style.transform = "translateY(-200px)";
-                smallStats.style.transform = "translateX(1565px)";
-                lowerPart.style.transform = "translateX(1565px)";
-                URCont.style.transform = "translateY(200px)";
             } else {
                 smallStats.style.transform = "none";
                 upperPart.style.transform = "none";
@@ -911,7 +889,7 @@ async function setupUser(name) {
     //const avaImage = await getImage('4223008');
     if (data === null) {
         data = {
-            user_id: "Muffinz",
+            user_id: "HosizoraN",
             username: `${name}`,
             pp_rank: "0",
             pp_raw: "0",
@@ -931,11 +909,10 @@ async function setupUser(name) {
     tempRanks = data.pp_rank;
     tempcountryRank = data.pp_country_rank;
     tempPlayerPP = data.pp_raw;
-
-    if (tempUID !== "Muffinz") {
+    if (tempUID !== "HosizoraN") {
         ava.style.backgroundImage = `url('https://a.ppy.sh/${tempUID}')`;
     } else {
-        ava.style.backgroundImage = "url('./static/gamer.png')";
+        ava.style.backgroundImage = "url('https://a.ppy.sh/17480237')";
     }
 
     country.style.backgroundImage = `url('https://osu.ppy.sh/assets/images/flags/${tempCountry}.svg')`;
