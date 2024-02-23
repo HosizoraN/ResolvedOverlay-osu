@@ -80,7 +80,6 @@ async function setupRankingPanel() {
     rankingPanelSet = true;
     rankingPanelBG.style.opacity = 1;
     
-    nowPlayingContainer.style.opacity = 0;
     document.getElementById("strainGraph").style.opacity = 0;
 
     rankingPanel.style.opacity = '1';
@@ -130,7 +129,7 @@ async function setupRankingPanel() {
     r0.innerHTML = temp0;
     rsb.innerHTML = tempsliderBreaks;
     sBPM.innerHTML = `${tempBPM} BPM`;
-    ppResult.innerHTML = tempPP.toFixed(0) + 'pp';
+    ppResult.innerHTML = tempPP + 'pp';
 
     resultRecorder.style.transform = 'none';
 }
@@ -148,7 +147,5 @@ async function deRankingPanel() {
     rankingResult.style.transform = "translateY(800px)";
     document.getElementById("modContainer").style.transform = "translateY(200px)";
 
-    nowPlayingContainer.style.opacity = 1;
     document.getElementById("strainGraph").style.opacity = 1;
 }
-

@@ -29,7 +29,6 @@ html {
 	margin: 0;
 	overflow: hidden;
 	/* background-color: #15151e; */
-	z-index: -5;
 }
 
 #main {
@@ -52,16 +51,17 @@ html {
 	font-weight: 900 !important;
 }
 
-/* #mapBG {
+#mapBG {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	background-color: black;
 	background-size: 100%;
 	background-position: 50% 50%;
 	z-index: -2;
 	transition: ease-in-out 500ms;
 	clip-path: url('#myClip');
-} */
+}
 
 #rankingPanelBG {
 	position: absolute;
@@ -69,10 +69,10 @@ html {
 	height: 100%;
 	background-size: 100%;
 	background-position: 50% 50%;
-	z-index: 2;
 	background-color: black;
 	transition: ease-in-out 500ms;
 	opacity: 0;
+	z-index: 2;
 }
 
 #top {
@@ -309,7 +309,6 @@ html {
 	transition: ease 500ms;
 	z-index: -1;
 }
-
 #progress {
 	bottom: 0;
 	position: absolute;

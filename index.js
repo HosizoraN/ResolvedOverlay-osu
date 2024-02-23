@@ -24,6 +24,8 @@ async function getAPI() {
 getAPI();
 // START
 let socket = new ReconnectingWebSocket("ws://127.0.0.1:24050/ws");
+let ingamedata = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2");
+let keypress = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2/keys");
 let mapid = document.getElementById("mapid");
 let mapBG = document.getElementById("mapBG");
 let rankingPanelBG = document.getElementById("rankingPanelBG");
@@ -39,6 +41,15 @@ let stars = document.getElementById("stars");
 let starsCurrent = document.getElementById("starsCurrent");
 let BPM = document.getElementById("BPM");
 let overlay = document.getElementById("overlay");
+let keys = document.getElementById('keys');
+let Key1Cont = document.getElementById('Key1Cont');
+let Key2Cont = document.getElementById('Key2Cont');
+let Mouse1Cont = document.getElementById('Mouse1Cont');
+let Mouse2Cont = document.getElementById('Mouse2Cont');
+let k1 = new KeyOverlay('k1', 'k1Tiles', { speed: 0.2, keyTextId: "k1Text", keyNameId: "key1"}),
+    k2 = new KeyOverlay('k2', 'k2Tiles', { speed: 0.2, keyTextId: "k2Text", keyNameId: "key2" }),
+    m1 = new KeyOverlay('m1', 'm1Tiles', { speed: 0.2, keyTextId: "m1Text", keyNameId: "key3" }),
+    m2 = new KeyOverlay('m2', 'm2Tiles', { speed: 0.2, keyTextId: "m2Text", keyNameId: "key4" });
 
 // PLAYING SCORE
 let upperPart = document.getElementById("top");
@@ -135,6 +146,14 @@ socket.onopen = () => {
     console.log("Successfully Connected");
 };
 
+ingamedata.onopen = () => {
+    console.log("api v2 connected");
+}
+
+keypress.onopen = () => {
+    console.log("api v2 keypress connected");
+}
+
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
@@ -184,11 +203,20 @@ socket.onclose = (event) => {
 socket.onerror = (error) => {
     console.log("Socket Error: ", error);
 };
+ingamedata.onerror = (error) => {
+    console.log("Socket Error: ", error);
+};
+keypress.onerror = (error) => {
+    console.log("Socket Error: ", error);
+};
+
 let tick = [];
 for (var t = 0; t < 30; t++) {
     tick[t] = document.querySelectorAll("[id^=tick]")[t];
 }
 let tempMapID, tempImg, tempMapArtist, tempMapTitle, tempMapDiff, tempMapper, tempRankedStatus;
+let avatarColor1 = '102, 102, 102',
+    avatarColor2 = '185, 185, 185';
 
 let tempSR, tempCS, tempAR, tempOD, tempHPDr;
 
@@ -244,6 +272,9 @@ let tempTotalAvg = 0;
 let tempTotalWeighted = 0;
 let tempBool;
 
+let colorSet = 0;
+let colorGet = get_bg_color('#nowPlayingContainer');
+
 let tempURIndex;
 let tempSmooth;
 
@@ -254,9 +285,6 @@ let ourplayerSet = 0;
 let ourplayerContainer;
 
 let minimodsContainerOP, tempMinimodsOP, minimodsCountOP;
-
-let colorSet = 0;
-let colorGet = get_bg_color("#nowPlayingContainer");
 
 let tempMapScores = [];
 let playerPosition;
@@ -280,14 +308,71 @@ window.onload = function () {
     window.myLineSecond = new Chart(ctxSecond, configSecond);
 };
 
+keypress.onmessage = (event) => {
+    let keypress = JSON.parse(event.data);
+
+    if (keypress.k1.count > 0) {
+        Key1Cont.style.opacity = 1
+        Key1Cont.style.transform = 'translateY(0)';
+    }
+    else {
+        Key1Cont.style.opacity = 0
+        Key1Cont.style.transform = 'translateY(-20px)';
+    }
+    if (keypress.k2.count > 0) {
+        Key2Cont.style.opacity = 1
+        Key2Cont.style.transform = 'translateY(0)';
+    }
+    else {
+        Key2Cont.style.opacity = 0
+        Key2Cont.style.transform = 'translateY(-20px)';
+    }
+    if (keypress.m1.count > 0) {
+        Mouse1Cont.style.opacity = 1
+        Mouse1Cont.style.transform = 'translateY(0)';
+    }
+    else {
+        Mouse1Cont.style.opacity = 0
+        Mouse1Cont.style.transform = 'translateY(-20px)';
+    }
+    if (keypress.m2.count > 0) {
+        Mouse2Cont.style.opacity = 1
+        Mouse2Cont.style.transform = 'translateY(0)';
+    }
+    else {
+        Mouse2Cont.style.opacity = 0
+        Mouse2Cont.style.transform = 'translateY(-20px)';
+    }
+
+    k1.update(keypress.k1, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
+    k2.update(keypress.k2, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
+    m1.update(keypress.m1, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
+    m2.update(keypress.m2, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
+}
+
 socket.onmessage = (event) => {
     let data = JSON.parse(event.data);
-    if (!colorSet) {
-        colorSet = 1;
-        setTimeout(function () {
-            colorGet = get_bg_color("#nowPlayingContainer");
-        }, 550);
-    }
+
+    //if (!colorSet) {
+    //colorSet = 1;
+    //    colorGet = get_bg_color('#nowPlayingContainer');
+    //}
+
+    //BarLeft.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+    //BarLeft.style.boxShadow = `0 0 10px 3px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+    //BarRight.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+    //BarRight.style.boxShadow = `0 0 10px 3px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b}`;
+
+    //smallStats.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+    //sMods.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+
+    //config.data.datasets[0].backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b}, 0.2)`;
+    //configSecond.data.datasets[0].backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b}, 0.7)`;
+    
+    //comboCont.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+    //comboCont.style.boxShadow = `0 0 5px 2px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+    //ppCont.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
+    //ppCont.style.boxShadow = `0 0 5px 2px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
 
     switch (leaderboardEnable) {
         case "1":
@@ -306,37 +391,42 @@ socket.onmessage = (event) => {
     if (tempImg !== data.menu.bm.path.full) {
         tempImg = data.menu.bm.path.full;
         data.menu.bm.path.full = data.menu.bm.path.full.replace(/#/g, "%23").replace(/%/g, "%25").replace(/\\/g, "/").replace(/'/g, "%27");
-        mapContainer.style.backgroundImage = `url('http://127.0.0.1:24050/Songs/${data.menu.bm.path.full}?a=${Math.random(10000)}')`;
         mapBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/Songs/${
             data.menu.bm.path.full
         }?a=${Math.random(10000)}')`;
         rankingPanelBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/Songs/${
             data.menu.bm.path.full
         }?a=${Math.random(10000)}')`;
+        mapContainer.style.backgroundImage = `url('http://127.0.0.1:24050/Songs/${data.menu.bm.path.full}?a=${Math.random(10000)}')`;
         mapContainer.style.backgroundPosition = "50% 50%";
     }
 
     if (gameState !== data.menu.state) {
         gameState = data.menu.state;
         if (gameState !== 2) {
-            if (gameState !== 7) deRankingPanel();
+            if (gameState !== 7) { deRankingPanel(); }
+
+            keys.style.opacity = 0;
+
             upperPart.style.transform = "translateY(-200px)";
             smallStats.style.transform = "translateX(-400px)";
             lowerPart.style.transform = "translateX(-400px)";
 
             tickPos = 0;
             tempAvg = 0;
-            URCont.style.transform ="translateY(200px)";
+            
+            URCont.style.transform = "translateY(200px)";
             l50.style.width = "450px";
-            l50.style.transform ="translateX(0)";
+            l50.style.transform = "translateX(0)";
             l300.style.width = "180px";
             l300.style.transform = "translateX(0)";
             l100.style.width = "315px";
             l100.style.transform = "translateX(0)";
             comboCont.style.transform = "none";
+            comboCont.style.width = "auto";
             ppCont.style.transform = "none";
+            ppCont.style.width = "auto";
             avgHitError.style.transform = "translateX(0)";
-
 
             bottom.style.transform = "translateY(300px)";
             URIndex.style.transform = "none";
@@ -358,7 +448,8 @@ socket.onmessage = (event) => {
             bottom.style.transform = "none";
             lowerPart.style.transform = "none";
             smallStats.style.transform = "none";
-            URCont.style.transform ="none";
+            URCont.style.transform = "none";
+            keys.style.opacity = 1;
         }
     }
 
@@ -405,8 +496,8 @@ socket.onmessage = (event) => {
     }
     if (data.gameplay.score == 0) {
     }
-    tempBPM = data.menu.bm.stats.BPM.common.toFixed(0);
-    BPM.innerText = data.menu.bm.stats.BPM.common.toFixed(0);
+    tempBPM = data.menu.bm.stats.BPM.common;
+    BPM.innerText = data.menu.bm.stats.BPM.common;
 
     if (tempScore !== data.gameplay.score) {
         tempTotalAvg = 0;
@@ -486,7 +577,7 @@ socket.onmessage = (event) => {
                 OD = (500 / 667) * data.menu.bm.stats.OD + -2210 / 667;
             }
         }
-        if (tempMods.search("NM") !== -1 && tempRankedStatus !== 4 || tempMods.search("NM") !== -1 && tempRankedStatus !== 7 || tempMods.search("NM") !== -1 && tempRankedStatus !== 6 || tempMods.search("SD") !== -1 && tempRankedStatus !== 4 || tempMods.search("SD") !== -1 && tempRankedStatus !== 7 || tempMods.search("SD") !== -1 && tempRankedStatus !== 6 || tempMods.search("PF") !== -1 && tempRankedStatus !== 4 || tempMods.search("PF") !== -1 && tempRankedStatus !== 7 || tempMods.search("PF") !== -1 && tempRankedStatus !== 6 || tempMods.search("FL") !== -1 && tempRankedStatus !== 4 || tempMods.search("FL") !== -1 && tempRankedStatus !== 7 || tempMods.search("FL") !== -1 && tempRankedStatus !== 6){
+        if (tempMods.search("") !== -1 && tempRankedStatus !== 4 || tempMods.search("") !== -1 && tempRankedStatus !== 7 || tempMods.search("") !== -1 && tempRankedStatus !== 6 || tempMods.search("SD") !== -1 && tempRankedStatus !== 4 || tempMods.search("SD") !== -1 && tempRankedStatus !== 7 || tempMods.search("SD") !== -1 && tempRankedStatus !== 6 || tempMods.search("PF") !== -1 && tempRankedStatus !== 4 || tempMods.search("PF") !== -1 && tempRankedStatus !== 7 || tempMods.search("PF") !== -1 && tempRankedStatus !== 6 || tempMods.search("FL") !== -1 && tempRankedStatus !== 4 || tempMods.search("FL") !== -1 && tempRankedStatus !== 7 || tempMods.search("FL") !== -1 && tempRankedStatus !== 6){
             sMods.innerHTML = " ";
             sMods.style.opacity = 1;
         }
@@ -560,8 +651,19 @@ socket.onmessage = (event) => {
             tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / 450 * 510;
             currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
             calculate_od(data.menu.bm.stats.memoryOD);
-            ppCont.style.width = "auto";
-            comboCont.style.width = "auto";
+
+            tempWidth = tempPP + " / " + tempPPfc + "pp";
+            ppCont.style.width = `${(tempWidth.length + Math.floor(tempPP/1000) + Math.floor(tempPPfc/1000))*15}px`;
+
+            tempWidth = tempCombo.toString()
+            if (CMCombo.style.opacity == 1)
+                tempWidth += " / " + tempMaxCombo.toString();
+            tempWidth += "0x";
+            comboCont.style.width = `${
+                (tempWidth.length + (Math.floor(tempCombo/1000)))*12 +
+                (CMCombo.style.opacity == 1 ? 10 + (Math.floor(tempMaxCombo/1000))*10 : 0)
+            }px`;
+
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
             comboCont.style.transform = `translateX(${OD * 11}px)`;
             ppCont.style.transform = `translateX(${OD * -11}px)`;
@@ -569,7 +671,7 @@ socket.onmessage = (event) => {
             l100.style.width = `${315 - (18 * OD)}px`;
             l300.style.width = `${180 - (13.5 * OD)}px`;
             if (tempMods.search("HR") !== -1 && data.menu.bm.stats.OD >= 10) {
-                calculate_od(data.menu.bm.stats.OD);
+                calculate_od(10);
                 comboCont.style.transform = `translateX(${10 * 11}px)`;
                 ppCont.style.transform = `translateX(${10 * -11}px)`;
                 l50.style.width = `${450 - (22 * 10)}px`;
@@ -611,8 +713,8 @@ socket.onmessage = (event) => {
                     function remove() {
                         document.getElementById("URbar").removeChild(tick);
                     }
-                    setTimeout(fade, 5000);
-                    setTimeout(remove, 10000);
+                    setTimeout(fade, 500);
+                    setTimeout(remove, 3500);
                 }
             }
         }
@@ -641,13 +743,13 @@ socket.onmessage = (event) => {
         tempsliderBreaks = data.gameplay.hits.sliderBreaks;
         hsb.innerHTML = tempsliderBreaks;
     }
-    if (tempPP !== data.gameplay.pp.current) {
-        tempPP = data.gameplay.pp.current;
-        pp.innerHTML = tempPP;
+    if (tempPP !== Math.round(data.gameplay.pp.current)) {
+        tempPP = Math.round(data.gameplay.pp.current);
+        pp.innerHTML = tempPP.toString();
     }
-    if (tempPPfc !== data.gameplay.pp.fc) {
-        tempPPfc = data.gameplay.pp.fc;
-        ppFC.innerHTML = tempPPfc;
+    if (tempPPfc !== Math.round(data.gameplay.pp.fc)) {
+        tempPPfc = Math.round(data.gameplay.pp.fc);
+        ppFC.innerHTML = tempPPfc.toString();
     }
     if (tempStarsCurrent !== data.menu.bm.stats.SR) {
         tempStarsCurrent = data.menu.bm.stats.SR;
@@ -676,7 +778,7 @@ socket.onmessage = (event) => {
 
         if (tempTimeCurrent >= tempTimeFull - 50000 && gameState === 2 && !apiGetSet) fetchData();
 
-        if (tempTimeCurrent >= tempTimeFull + 200 && gameState === 2 || tempTimeCurrent >= tempTimeMP3 - 2000 && gameState === 2) rankingPanelBG.style.opacity = 1;
+        if (tempTimeCurrent >= tempTimeFull + 200 && gameState === 2) { rankingPanelBG.style.opacity = 1; keys.style.opacity = 0; }
 
         if (rankingPanelBG.style.opacity !== 1 && gameState === 2 && tempTimeCurrent >= tempTimeFull + 700 || gameState === 7) {
             if (!rankingPanelSet) setupRankingPanel();
@@ -886,7 +988,7 @@ async function setupUser(name) {
     let data;
     if (api != "") data = await getUserDataSet(name);
     else data = null;
-    //const avaImage = await getImage('4223008');
+    // const avaImage = await getImage('12351533');
     if (data === null) {
         data = {
             user_id: "HosizoraN",
@@ -912,7 +1014,7 @@ async function setupUser(name) {
     if (tempUID !== "HosizoraN") {
         ava.style.backgroundImage = `url('https://a.ppy.sh/${tempUID}')`;
     } else {
-        ava.style.backgroundImage = "url('https://a.ppy.sh/17480237')";
+        ava.style.backgroundImage = "url('./static/gamer.png')";
     }
 
     country.style.backgroundImage = `url('https://osu.ppy.sh/assets/images/flags/${tempCountry}.svg')`;
@@ -923,31 +1025,30 @@ async function setupUser(name) {
 
     playerPP.innerHTML = Math.round(tempPlayerPP) + "pp";
 
-    const avatarColor = await postUserID(tempUID);
+    let avatarColor = await postUserID(tempUID);
     if (avatarColor) {
-        BarLeft.style.backgroundColor = `hsl(${avatarColor[0]})`;
-        BarLeft.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[0]})`;
-        BarRight.style.backgroundColor = `hsl(${avatarColor[1]})`;
-        BarRight.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
+        avatarColor1 = `${avatarColor.rgb1[0]}, ${avatarColor.rgb1[1]}, ${avatarColor.rgb1[2]}`,
+        avatarColor2 = `${avatarColor.rgb2[0]}, ${avatarColor.rgb2[1]}, ${avatarColor.rgb2[2]}`;
 
-        smallStats.style.backgroundColor = `hsl(${avatarColor[0]})`;
-        sMods.style.backgroundColor = `hsl(${avatarColor[0]})`;
+        BarLeft.style.backgroundColor = `rgb(${avatarColor1})`;
+        BarLeft.style.boxShadow = `0 0 10px 3px rgb(${avatarColor1})`;
+        BarRight.style.backgroundColor = `rgb(${avatarColor2})`;
+        BarRight.style.boxShadow = `0 0 10px 3px rgb(${avatarColor2})`;
 
-        config.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.2)`;
-        configSecond.data.datasets[0].backgroundColor = `hsl(${avatarColor[0]}, 0.7)`;
+        smallStats.style.backgroundColor = `rgb(${avatarColor1})`;
+        sMods.style.backgroundColor = `rgb(${avatarColor1})`;
+
+        config.data.datasets[0].backgroundColor = `rgb(${avatarColor1}, 0.2)`;
+        configSecond.data.datasets[0].backgroundColor = `rgb(${avatarColor1}, 0.7)`;
         
-        document.getElementById("comboCont").style.backgroundColor = `hsl(${avatarColor[0]})`;
-        document.getElementById("comboCont").style.boxShadow = `0 0 5px 2px hsl(${avatarColor[0]})`;
-        // document.getElementById("comboBar").style.filter = `drop-shadow(0 0 10px hsl(${avatarColor[0]}))`;
-        document.getElementById("ppCont").style.backgroundColor = `hsl(${avatarColor[1]})`;
-        document.getElementById("ppCont").style.boxShadow = `0 0 5px 2px hsl(${avatarColor[1]})`;
-        // document.getElementById("ppBar").style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
+        comboCont.style.backgroundColor = `rgb(${avatarColor1})`;
+        comboCont.style.boxShadow = `0 0 5px 2px rgb(${avatarColor1})`;
+        ppCont.style.backgroundColor = `rgb(${avatarColor2})`; 
+        ppCont.style.boxShadow = `0 0 5px 2px rgb(${avatarColor2})`;
 
-        // combo.style.borderColor = `hsl(${avatarColor[0]})`;
-        // combo.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[0]})`;
-        // pp.style.borderColor = `hsl(${avatarColor[1]})`;
-        // pp.style.boxShadow = `0 0 10px 3px hsl(${avatarColor[1]})`;
     }
+    else avatarColor1 = '102, 102, 102',
+         avatarColor2 = '185, 185, 185';
 }
 
 async function fetchWebBancho(md5, beatmapId) {
@@ -980,7 +1081,7 @@ async function fetchWebBancho(md5, beatmapId) {
 }
 
 async function getMapScores2(beatmapID) {
-    let rawData = await postNhayCam_1(beatmapID);
+    let rawData = await postDNTT(beatmapID);
 
     let obj = [];
 
@@ -1227,10 +1328,10 @@ async function getMapScores(beatmapID) {
     }
 }
 
-async function postNhayCam_1(beatmap_id) {
+async function postDNTT(beatmap_id) {
     try {
         let rawData = null;
-        const data = await axios.get(`https://tryz.vercel.app/api/countryRanking/${beatmap_id}`).then((response) => {
+        const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/scores`).then((response) => {
             // rawData = response.data.data;
             rawData = response.data;
         });
@@ -1241,12 +1342,12 @@ async function postNhayCam_1(beatmap_id) {
 }
 
 async function postUserID(id) {
-    try {
-        let imageData = null;
-        const dataImageAsBase64 = await axios.get(`http://tryz.vercel.app/api/color/${id}`).then((response) => {
-            imageData = response.data.colorData;
-        });
-        return imageData;
+   try {
+       let rawData = null;
+       const data = await axios.get(`https://phubahosi.vercel.app/api/color/${id}`).then((response) => {
+            rawData = response.data //im confused :skull:
+       });
+       return rawData;
     } catch (error) {
         console.error(error);
     }
