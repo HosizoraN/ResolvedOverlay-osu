@@ -23,8 +23,8 @@ async function getAPI() {
 }
 getAPI();
 // START
-let socket = new ReconnectingWebSocket("ws://127.0.0.1:24050/ws");
-let ingamedata = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2");
+let socket = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2");
+let legacysocket = new ReconnectingWebSocket("ws://127.0.0.1:24050/ws");
 let keypress = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2/keys");
 let mapid = document.getElementById("mapid");
 let mapBG = document.getElementById("mapBG");
@@ -143,13 +143,11 @@ let rsliderBreaks = document.getElementById("rsb");
 let ppResult = document.getElementById("ppResult");
 
 socket.onopen = () => {
-    console.log("Successfully Connected");
-};
-
-ingamedata.onopen = () => {
     console.log("api v2 connected");
+};
+legacysocket.onopen = () => {
+    console.log("some api v1 stuff connected")
 }
-
 keypress.onopen = () => {
     console.log("api v2 keypress connected");
 }
@@ -199,50 +197,28 @@ socket.onclose = (event) => {
     console.log("Socket Closed Connection: ", event);
     socket.send("Client Closed!");
 };
-
 socket.onerror = (error) => {
-    console.log("Socket Error: ", error);
-};
-ingamedata.onerror = (error) => {
     console.log("Socket Error: ", error);
 };
 keypress.onerror = (error) => {
     console.log("Socket Error: ", error);
 };
-
+legacysocket.onerror = (error) => {
+    console.log("Socket Error: ", error);
+}
 let tick = [];
 for (var t = 0; t < 30; t++) {
     tick[t] = document.querySelectorAll("[id^=tick]")[t];
 }
-let tempMapID, tempImg, tempMapArtist, tempMapTitle, tempMapDiff, tempMapper, tempRankedStatus;
 let avatarColor1 = '102, 102, 102',
     avatarColor2 = '185, 185, 185';
 
-let tempSR, tempCS, tempAR, tempOD, tempHPDr;
-
-let gameState;
-let tempScore;
-let tempAcc;
-let tempCombo;
-let tempMaxCombo;
-let interfaceID;
-
-let temp300;
-let temp100;
-let temp50;
-let temp0;
-let tempsliderBreaks;
-let tempGrade;
-
-let tempPP;
-let tempPPfc;
-
-let tempUsername;
 let tempUID;
 let tempCountry;
 let tempRanks;
 let tempcountryRank;
 let tempPlayerPP;
+let tempUsername;
 
 let tempHP;
 let tempMods;
@@ -251,19 +227,14 @@ let isHidden;
 let rankingPanelSet;
 let apiGetSet = false;
 
-let tempTimeCurrent;
-let tempTimeFull;
-let tempFirstObj;
-let tempTimeMP3;
-let tempStarsCurrent
-
 let tempStrainBase;
+let tempLink
 let smoothOffset = 2;
 let seek;
 let fullTime;
+let tempPP;
+let tempPPfc;
 
-let tempHitErrorArrayLength;
-let tempBPM;
 let OD = 0;
 let tickPos;
 let fullPos;
@@ -275,7 +246,6 @@ let tempBool;
 let colorSet = 0;
 let colorGet = get_bg_color('#nowPlayingContainer');
 
-let tempURIndex;
 let tempSmooth;
 
 let tempSlotLength, tempCurrentPosition;
@@ -290,6 +260,7 @@ let tempMapScores = [];
 let playerPosition;
 
 let currentErrorValue;
+let tempHitErrorArrayLength;
 
 let error_h300 = 80;
 let error_h100 = 140;
@@ -317,7 +288,7 @@ keypress.onmessage = (event) => {
     }
     else {
         Key1Cont.style.opacity = 0
-        Key1Cont.style.transform = 'translateY(-20px)';
+        Key1Cont.style.transform = 'translateY(-10px)';
     }
     if (keypress.k2.count > 0) {
         Key2Cont.style.opacity = 1
@@ -325,7 +296,7 @@ keypress.onmessage = (event) => {
     }
     else {
         Key2Cont.style.opacity = 0
-        Key2Cont.style.transform = 'translateY(-20px)';
+        Key2Cont.style.transform = 'translateY(-10px)';
     }
     if (keypress.m1.count > 0) {
         Mouse1Cont.style.opacity = 1
@@ -333,7 +304,7 @@ keypress.onmessage = (event) => {
     }
     else {
         Mouse1Cont.style.opacity = 0
-        Mouse1Cont.style.transform = 'translateY(-20px)';
+        Mouse1Cont.style.transform = 'translateY(-10px)';
     }
     if (keypress.m2.count > 0) {
         Mouse2Cont.style.opacity = 1
@@ -341,38 +312,44 @@ keypress.onmessage = (event) => {
     }
     else {
         Mouse2Cont.style.opacity = 0
-        Mouse2Cont.style.transform = 'translateY(-20px)';
+        Mouse2Cont.style.transform = 'translateY(-10px)';
     }
 
-    k1.update(keypress.k1, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
-    k2.update(keypress.k2, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
-    m1.update(keypress.m1, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
-    m2.update(keypress.m2, `rgb(${avatarColor1})`) //`rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`)
+    k1.update(keypress.k1, `rgb(${avatarColor1})`)
+    k2.update(keypress.k2, `rgb(${avatarColor1})`)
+    m1.update(keypress.m1, `rgb(${avatarColor1})`)
+    m2.update(keypress.m2, `rgb(${avatarColor1})`)
+}
+
+legacysocket.onmessage = (event) => {
+    let legacysocket = JSON.parse(event.data);
+
+    if (tempStrainBase !== JSON.stringify(legacysocket.menu.pp.strains)) {
+        tempLink = JSON.stringify(legacysocket.menu.pp.strains);
+        if (legacysocket.menu.pp.strains) smoothed = smooth(legacysocket.menu.pp.strains, smoothOffset);
+        config.data.datasets[0].data = smoothed;
+        config.data.labels = smoothed;
+        configSecond.data.datasets[0].data = smoothed;
+        configSecond.data.labels = smoothed;
+        if (window.myLine && window.myLineSecond) {
+            window.myLine.update();
+            window.myLineSecond.update();
+        }
+    }
+
+    if(fullTime !== legacysocket.menu.bm.time.mp3) {
+		fullTime = legacysocket.menu.bm.time.mp3;
+		onepart = 1400/fullTime;
+	}
+
+    if (seek !== legacysocket.menu.bm.time.current && legacysocket.menu.bm.time.mp3 !== undefined && legacysocket.menu.bm.time.mp3 !== 0) {
+        seek = legacysocket.menu.bm.time.current;
+        progressChart.style.width = onepart * seek / 1.58 +'px';
+    }
 }
 
 socket.onmessage = (event) => {
     let data = JSON.parse(event.data);
-
-    //if (!colorSet) {
-    //colorSet = 1;
-    //    colorGet = get_bg_color('#nowPlayingContainer');
-    //}
-
-    //BarLeft.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-    //BarLeft.style.boxShadow = `0 0 10px 3px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-    //BarRight.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-    //BarRight.style.boxShadow = `0 0 10px 3px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b}`;
-
-    //smallStats.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-    //sMods.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-
-    //config.data.datasets[0].backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b}, 0.2)`;
-    //configSecond.data.datasets[0].backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b}, 0.7)`;
-    
-    //comboCont.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-    //comboCont.style.boxShadow = `0 0 5px 2px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-    //ppCont.style.backgroundColor = `rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
-    //ppCont.style.boxShadow = `0 0 5px 2px rgb(${colorGet.r}, ${colorGet.g}, ${colorGet.b})`;
 
     switch (leaderboardEnable) {
         case "1":
@@ -383,28 +360,20 @@ socket.onmessage = (event) => {
             break;
     }
 
-    if (data.gameplay.name && tempUsername !== data.gameplay.name) {
-        tempUsername = data.gameplay.name;
+    if (data.play.playerName && tempUsername !== data.play.playerName) {
+        tempUsername = data.play.playerName;
         username.innerHTML = tempUsername;
         setupUser(tempUsername);
     }
-    if (tempImg !== data.menu.bm.path.full) {
-        tempImg = data.menu.bm.path.full;
-        data.menu.bm.path.full = data.menu.bm.path.full.replace(/#/g, "%23").replace(/%/g, "%25").replace(/\\/g, "/").replace(/'/g, "%27");
-        mapBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/Songs/${
-            data.menu.bm.path.full
-        }?a=${Math.random(10000)}')`;
-        rankingPanelBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/Songs/${
-            data.menu.bm.path.full
-        }?a=${Math.random(10000)}')`;
-        mapContainer.style.backgroundImage = `url('http://127.0.0.1:24050/Songs/${data.menu.bm.path.full}?a=${Math.random(10000)}')`;
-        mapContainer.style.backgroundPosition = "50% 50%";
-    }
 
-    if (gameState !== data.menu.state) {
-        gameState = data.menu.state;
-        if (gameState !== 2) {
-            if (gameState !== 7) { deRankingPanel(); }
+        data.folders.beatmap = data.folders.beatmap.replace(/#/g, "%23").replace(/%/g, "%25").replace(/\\/g, "/").replace(/'/g, "%27").replace(/ /g, "%20")
+        mapBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
+        rankingPanelBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
+        mapContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
+        mapContainer.style.backgroundPosition = "50% 50%";
+
+        if (data.state !== 2) {
+            if (data.state !== 7) { deRankingPanel(); }
 
             keys.style.opacity = 0;
 
@@ -416,16 +385,8 @@ socket.onmessage = (event) => {
             tempAvg = 0;
             
             URCont.style.transform = "translateY(200px)";
-            l50.style.width = "450px";
-            l50.style.transform = "translateX(0)";
-            l300.style.width = "180px";
-            l300.style.transform = "translateX(0)";
-            l100.style.width = "315px";
-            l100.style.transform = "translateX(0)";
-            comboCont.style.transform = "none";
             comboCont.style.width = "auto";
-            ppCont.style.transform = "none";
-            ppCont.style.width = "auto";
+            ppCont.style.width = "35px";
             avgHitError.style.transform = "translateX(0)";
 
             bottom.style.transform = "translateY(300px)";
@@ -451,98 +412,45 @@ socket.onmessage = (event) => {
             URCont.style.transform = "none";
             keys.style.opacity = 1;
         }
-    }
 
-    if (tempMapID !== data.menu.bm.id || tempSR !== data.menu.bm.stats.fullSR) {
-        colorSet = 0;
-        tempMapID = data.menu.bm.id;
-        tempMapArtist = data.menu.bm.metadata.artist;
-        tempMapTitle = data.menu.bm.metadata.title;
-        tempMapDiff = "[" + data.menu.bm.metadata.difficulty + "]";
-        tempMapper = data.menu.bm.metadata.mapper;
-        tempRankedStatus = data.menu.bm.rankedStatus;
+        mapName.innerHTML = data.beatmap.artist + " - " + data.beatmap.title;
 
-        tempCS = data.menu.bm.stats.CS;
-        tempAR = data.menu.bm.stats.AR;
-        tempOD = data.menu.bm.stats.OD;
-        tempHPDr = data.menu.bm.stats.HP;
-        tempSR = data.menu.bm.stats.fullSR;
-
-        tempFirstObj = data.menu.bm.time.firstObj;
-
-        mapName.innerHTML = tempMapArtist + " - " + tempMapTitle;
-
-        mapInfo.innerHTML = `${tempMapDiff}`;
+        mapInfo.innerHTML = data.beatmap.version;
 
         stats.innerHTML =
             "CS: " +
-            tempCS +
+            data.beatmap.stats.cs.converted +
             "&emsp;" +
             "AR: " +
-            tempAR +
+            data.beatmap.stats.ar.converted +
             "&emsp;" +
             "OD: " +
-            tempOD +
+            data.beatmap.stats.od.converted +
             "&emsp;" +
             "HP: " +
-            tempHPDr +
+            data.beatmap.stats.hp.converted +
             "&emsp;" +
             "Star Rating: " +
-            tempSR +
+            data.beatmap.stats.stars.total +
             "*";
-       }
-    if (tempGrade !== data.gameplay.hits.grade.current) {
-        tempGrade = data.gameplay.hits.grade.current;
-    }
-    if (data.gameplay.score == 0) {
-    }
-    tempBPM = data.menu.bm.stats.BPM.common;
-    BPM.innerText = data.menu.bm.stats.BPM.common;
 
-    if (tempScore !== data.gameplay.score) {
+        BPM.innerText = data.beatmap.stats.bpm.common;
+
         tempTotalAvg = 0;
         tempTotalWeighted = 0;
         tempAvg = 0;
-        tempScore = data.gameplay.score;
-        score.innerHTML = tempScore;
+        score.innerHTML = data.play.score;
         animation.score.update(score.innerHTML);
-    }
 
-    if (tempAcc !== data.gameplay.accuracy) {
-        tempAcc = data.gameplay.accuracy;
-        acc.innerHTML = tempAcc;
+        acc.innerHTML = data.play.accuracy;
         animation.acc.update(acc.innerHTML);
-    }
 
-    if (fullTime !== data.menu.bm.time.mp3) {
-        fullTime = data.menu.bm.time.mp3;
-        onepart = 490 / fullTime;
-    }
-
-    if (tempStrainBase !== JSON.stringify(data.menu.pp.strains)) {
-        tempLink = JSON.stringify(data.menu.pp.strains);
-        if (data.menu.pp.strains) smoothed = smooth(data.menu.pp.strains, smoothOffset);
-        config.data.datasets[0].data = smoothed;
-        config.data.labels = smoothed;
-        configSecond.data.datasets[0].data = smoothed;
-        configSecond.data.labels = smoothed;
-        if (window.myLine && window.myLineSecond) {
-            window.myLine.update();
-            window.myLineSecond.update();
-        }
-    }
-	if(fullTime !== data.menu.bm.time.mp3){
-		fullTime = data.menu.bm.time.mp3;
-		onepart = 1400/fullTime;
-	}
-    if (seek !== data.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
-        seek = data.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 1.58 +'px';
-    }
-    if (tempMods !== data.menu.mods.str) {
+        onepart = 490 / data.beatmap.time.lastObject;
+        
+    if (tempMods !== data.play.mods.name) {
         document.getElementById("modContainer").innerHTML = "";
 
-        tempMods = data.menu.mods.str;
+        tempMods = data.play.mods.name;
 
         if (tempMods.search("HD") !== -1) 
             isHidden = true;
@@ -565,103 +473,93 @@ socket.onmessage = (event) => {
             i++;
         }
 
-        if (OD !== data.menu.bm.stats.OD) {
-            if (data.menu.mods.str.indexOf("DT") == -1 || data.menu.mods.str.indexOf("NC") == -1) {
-                OD = data.menu.bm.stats.OD;
+        if (OD !== data.beatmap.stats.od.converted) {
+            if (data.play.mods.name.indexOf("DT") == -1 || data.play.mods.name.indexOf("NC") == -1) {
+                OD = data.beatmap.stats.od.converted;
             } else {
-                OD = (500 / 333) * data.menu.bm.stats.OD + -2210 / 333;
+                OD = (500 / 333) * data.beatmap.stats.od.converted + -2210 / 333;
             }
-            if (data.menu.mods.str.indexOf("HT") == -1) {
-                OD = data.menu.bm.stats.OD;
+            if (data.play.mods.name.indexOf("HT") == -1) {
+                OD = data.beatmap.stats.od.converted;
             } else {
-                OD = (500 / 667) * data.menu.bm.stats.OD + -2210 / 667;
+                OD = (500 / 667) * data.beatmap.stats.od.converted + -2210 / 667;
             }
         }
-        if (tempMods.search("") !== -1 && tempRankedStatus !== 4 || tempMods.search("") !== -1 && tempRankedStatus !== 7 || tempMods.search("") !== -1 && tempRankedStatus !== 6 || tempMods.search("SD") !== -1 && tempRankedStatus !== 4 || tempMods.search("SD") !== -1 && tempRankedStatus !== 7 || tempMods.search("SD") !== -1 && tempRankedStatus !== 6 || tempMods.search("PF") !== -1 && tempRankedStatus !== 4 || tempMods.search("PF") !== -1 && tempRankedStatus !== 7 || tempMods.search("PF") !== -1 && tempRankedStatus !== 6 || tempMods.search("FL") !== -1 && tempRankedStatus !== 4 || tempMods.search("FL") !== -1 && tempRankedStatus !== 7 || tempMods.search("FL") !== -1 && tempRankedStatus !== 6){
-            sMods.innerHTML = " ";
+        if (data.beatmap.status.number === 4 || data.beatmap.status.number === 7 || data.beatmap.status.number === 6) {
             sMods.style.opacity = 1;
-        }
-        else if (tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 4 || tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 7 || tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 6) {
-            sMods.innerHTML = "(HD)DT(HR)";
-            sMods.style.opacity = 1;
-        }
-        else if (tempMods.search("NC") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 4 || tempMods.search("NC") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 7 || tempMods.search("NC") !== -1 && tempMods.search("HR") !== -1 && tempRankedStatus !== 6) {
-            sMods.innerHTML = "(HD)NC(HR)";
-            sMods.style.opacity = 1;
-        }
-        else if (tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 4 || tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 7 || tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 6 || tempMods.search("NC") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 4 || tempMods.search("NC") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 7 || tempMods.search("NC") !== -1 && tempMods.search("EZ") !== -1 && tempRankedStatus !== 6) {
-            sMods.innerHTML = "EZDT/NC(HD)(FL)";
-            sMods.style.opacity = 1;
-        }
-        else if (tempMods.search("DT") !== -1 && tempRankedStatus !== 4 || tempMods.search("DT") !== -1 && tempRankedStatus !== 7 || tempMods.search("DT") !== -1 && tempRankedStatus !== 6 || tempMods.search("NC") !== -1 && tempRankedStatus !== 4 || tempMods.search("NC") !== -1 && tempRankedStatus !== 7 || tempMods.search("NC") !== -1 && tempRankedStatus !== 6) {
-            sMods.innerHTML = "(HD)DT/NC";
-            sMods.style.opacity = 1;
-        }
-        else if (tempMods.search("HR") !== -1 && tempRankedStatus !== 4 || tempMods.search("HR") !== -1 && tempRankedStatus !== 7 || tempMods.search("HR") !== -1 && tempRankedStatus !== 6) {
-            sMods.innerHTML = "(HD)HR";
-            sMods.style.opacity = 1;
-        }
-        else if (tempMods.search("EZ") !== -1 && tempRankedStatus !== 4 || tempMods.search("EZ") !== -1 && tempRankedStatus !== 7 || tempMods.search("EZ") !== -1 && tempRankedStatus !== 6) {
-            sMods.innerHTML = "EZ(HD)(FL)";
-            sMods.style.opacity = 1;
-        }
-        else if (tempMods.search("HD") !== -1 && tempRankedStatus !== 4 || tempMods.search("HD") !== -1 && tempRankedStatus !== 7 || tempMods.search("HD") !== -1 && tempRankedStatus !== 6) {
-            sMods.innerHTML = "NM/HD/TD";
-            sMods.style.opacity = 1;
+            if (tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1) {
+                sMods.innerHTML = "(HD)DT(HR)";
+            }
+            else if (tempMods.search("NC") !== -1 && tempMods.search("HR") !== -1) {
+                sMods.innerHTML = "(HD)NC(HR)";
+            }
+            else if (tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1) {
+                sMods.innerHTML = "EZDT/NC(HD)(FL)";
+            }
+            else if (tempMods.search("DT") !== -1) {
+                sMods.innerHTML = "(HD)DT/NC";
+            }
+            else if (tempMods.search("HR") !== -1) {
+                sMods.innerHTML = "(HD)HR";
+            }
+            else if (tempMods.search("EZ") !== -1) {
+                sMods.innerHTML = "EZ(HD)(FL)";
+            }
+            else if (tempMods.search("HD") !== -1) {
+                sMods.innerHTML = "NM/HD/TD";
+            }
+            else {
+                sMods.innerHTML = " ";
+            }
         }
         else {
             sMods.style.opacity = 0;
         }
     }
-    if (tempCombo !== data.gameplay.combo.current) {
-        tempCombo = data.gameplay.combo.current;
-        combo.innerHTML = tempCombo;
+        combo.innerHTML = data.play.combo.current;
         animation.combo.update(combo.innerHTML);
-    }
-    if (tempMaxCombo !== data.gameplay.combo.max) {
-        tempMaxCombo = data.gameplay.combo.max;
-    }
-    if (data.gameplay.combo.max <= data.gameplay.combo.current) {
+
+    if (data.play.combo.max <= data.play.combo.current) {
         CMCombo.innerHTML = "";
         CMCombo.style.opacity = 0;
         CMCombo.style.width = "0px";
         slash.innerHTML = "";
     }
-    else if (data.gameplay.hits.sliderBreaks > 0 || data.gameplay.hits[0] > 0 && data.gameplay.combo.max >= data.gameplay.combo.current) {
-        CMCombo.innerHTML = tempMaxCombo;
+    else if (data.play.hits.sliderBreaks > 0 || data.play.hits[0] > 0 && data.play.combo.max >= data.play.combo.current) {
+        CMCombo.innerHTML = data.play.combo.max;
         slash.innerHTML = " / ";
         CMCombo.style.opacity = 1;
         CMCombo.style.width = "auto";
-     } else {
+    } else {
         CMCombo.innerHTML = "";
         CMCombo.style.opacity = 0;
         CMCombo.style.width = "0px";
         slash.innerHTML = "";
     }
 
-    if (data.gameplay.hits.hitErrorArray !== null) {
-        tempSmooth = smooth(data.gameplay.hits.hitErrorArray, 4);
-        OD = data.menu.bm.stats.memoryOD;
+    if (data.play.hitErrorArray !== null) {
+        tempSmooth = smooth(data.play.hitErrorArray, 4);
+        OD = data.beatmap.stats.od.original;
         if (tempHitErrorArrayLength !== tempSmooth.length) {
             tempHitErrorArrayLength = tempSmooth.length;
             for (var a = 0; a < tempHitErrorArrayLength; a++) {
                 tempAvg = tempAvg * 0.9 + tempSmooth[a] * 0.1;
             }
             fullPos = (-11 * OD + 225);
-            tickPos = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1] / 450 * 510;
-            currentErrorValue = data.gameplay.hits.hitErrorArray[tempHitErrorArrayLength - 1];
-            calculate_od(data.menu.bm.stats.memoryOD);
+            tickPos = data.play.hitErrorArray[tempHitErrorArrayLength - 1] / 450 * 510;
+            currentErrorValue = data.play.hitErrorArray[tempHitErrorArrayLength - 1];
+            calculate_od(data.beatmap.stats.od.original);
 
             tempWidth = tempPP + " / " + tempPPfc + "pp";
-            ppCont.style.width = `${(tempWidth.length + Math.floor(tempPP/1000) + Math.floor(tempPPfc/1000))*15}px`;
+            ppCont.style.width = `${(tempWidth.length + Math.floor(tempPP/1000) + Math.floor(tempPPfc/1000))*16}px`;
 
-            tempWidth = tempCombo.toString()
+            tempWidth = data.play.combo.current
             if (CMCombo.style.opacity == 1)
-                tempWidth += " / " + tempMaxCombo.toString();
+                tempWidth += " / " + data.play.combo.max;
             tempWidth += "0x";
             comboCont.style.width = `${
-                (tempWidth.length + (Math.floor(tempCombo/1000)))*12 +
-                (CMCombo.style.opacity == 1 ? 10 + (Math.floor(tempMaxCombo/1000))*10 : 0)
+                (tempWidth.length + (Math.floor(data.play.combo.current/1000)))*13 +
+                (CMCombo.style.opacity == 1 ? 6 + (Math.floor(data.play.combo.max/1000))*6 : 0)
             }px`;
 
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
@@ -670,7 +568,7 @@ socket.onmessage = (event) => {
             l50.style.width = `${450 - (22 * OD)}px`;
             l100.style.width = `${315 - (18 * OD)}px`;
             l300.style.width = `${180 - (13.5 * OD)}px`;
-            if (tempMods.search("HR") !== -1 && data.menu.bm.stats.OD >= 10) {
+            if (tempMods.search("HR") !== -1 && data.beatmap.stats.od.converted >= 10) {
                 calculate_od(10);
                 comboCont.style.transform = `translateX(${10 * 11}px)`;
                 ppCont.style.transform = `translateX(${10 * -11}px)`;
@@ -719,85 +617,62 @@ socket.onmessage = (event) => {
             }
         }
     }
-    if (tempURIndex !== data.gameplay.hits.unstableRate) {
-        tempURIndex = data.gameplay.hits.unstableRate;
-        URIndex.innerHTML = tempURIndex;
-    }
 
-    if (temp300 !== data.gameplay.hits[300]) {
-        temp300 = data.gameplay.hits[300];
-    }
-    if (temp100 !== data.gameplay.hits[100]) {
-        temp100 = data.gameplay.hits[100];
-        h100.innerHTML = temp100;
-    }
-    if (temp50 !== data.gameplay.hits[50]) {
-        temp50 = data.gameplay.hits[50];
-        h50.innerHTML = temp50;
-    }
-    if (temp0 !== data.gameplay.hits[0]) {
-        temp0 = data.gameplay.hits[0];
-        h0.innerHTML = temp0;
-    }
-    if (tempsliderBreaks !== data.gameplay.hits.sliderBreaks) {
-        tempsliderBreaks = data.gameplay.hits.sliderBreaks;
-        hsb.innerHTML = tempsliderBreaks;
-    }
-    if (tempPP !== Math.round(data.gameplay.pp.current)) {
-        tempPP = Math.round(data.gameplay.pp.current);
+    URIndex.innerHTML = data.play.unstableRate;
+    h100.innerHTML = data.play.hits[100];
+    h50.innerHTML = data.play.hits[50];
+    h0.innerHTML = data.play.hits[0];
+    hsb.innerHTML = data.play.hits.sliderBreaks;
+
+    if (tempPP !== Math.round(data.play.pp.current)) {
+        tempPP = Math.round(data.play.pp.current);
         pp.innerHTML = tempPP.toString();
     }
-    if (tempPPfc !== Math.round(data.gameplay.pp.fc)) {
-        tempPPfc = Math.round(data.gameplay.pp.fc);
+    if (tempPPfc !== Math.round(data.play.pp.fc)) {
+        tempPPfc = Math.round(data.play.pp.fc);
         ppFC.innerHTML = tempPPfc.toString();
     }
-    if (tempStarsCurrent !== data.menu.bm.stats.SR) {
-        tempStarsCurrent = data.menu.bm.stats.SR;
-        starsCurrent.innerHTML = tempStarsCurrent;
-        animation.starsCurrent.update(starsCurrent.innerHTML);
+
+    starsCurrent.innerHTML = data.beatmap.stats.stars.live;
+    animation.starsCurrent.update(starsCurrent.innerHTML);
+
+    if (data.beatmap.time.live > data.beatmap.time.live) {
+         leaderboard.innerHTML = '';
+         $("#ourplayer").remove();
+         ourplayerSet = 0;
+         leaderboardSet = 0;
     }
-    if (tempTimeCurrent !== data.menu.bm.time.current) {
-        if (tempTimeCurrent > data.menu.bm.time.current) {
-             leaderboard.innerHTML = '';
-             $("#ourplayer").remove();
-             ourplayerSet = 0;
-             leaderboardSet = 0;
-         }
-        tempTimeCurrent = data.menu.bm.time.current;
-        tempTimeFull = data.menu.bm.time.full;
-        tempTimeMP3 = data.menu.bm.time.mp3;
-        interfaceID = data.settings.showInterface;
 
-        if (tempTimeCurrent >= tempFirstObj + 5000 && tempTimeCurrent <= tempFirstObj + 11900 && gameState == 2) {
-            recorder.style.transform = "translateX(600px)";
-            if (tempTimeCurrent >= tempFirstObj + 5500) recorderName.style.transform = "translateX(600px)";
-        } else {
-            recorder.style.transform = "none";
-            recorderName.style.transform = "none";
+    if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5000 && data.beatmap.time.live <= data.beatmap.time.firstObject + 11900 && data.state == 2) {
+        recorder.style.transform = "translateX(600px)";
+        if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5500) recorderName.style.transform = "translateX(600px)";
+    } else {
+        recorder.style.transform = "none";
+        recorderName.style.transform = "none";
+    }
+
+    if (data.beatmap.time.live >= data.beatmap.time.lastObject - 10000 && data.state === 2 && !apiGetSet) fetchData();
+
+    if (data.beatmap.time.live >= data.beatmap.time.lastObject + 800 && data.state === 2) { rankingPanelBG.style.opacity = 1; keys.style.opacity = 0; }
+
+    if (rankingPanelBG.style.opacity !== 1 && data.state === 2 && data.beatmap.time.live >= data.beatmap.time.lastObject + 1200 || data.state === 7) {
+        if (!rankingPanelSet) setupRankingPanel();
+        if (data.resultsScreen.rank !== "")
+            if (!isHidden) rankingResult.style.backgroundImage = `url('./static/rankings/${data.resultsScreen.rank}.png')`;
+            else if (data.resultsScreen.rank === "S" || data.resultsScreen.rank === "X") rankingResult.style.backgroundImage = `url('./static/rankings/${data.resultsScreen.rank}H.png')`;
+            else rankingResult.style.backgroundImage = `url('./static/rankings/${data.resultsScreen.rank}.png')`;
+    } else if (!(data.beatmap.time.live >= data.beatmap.time.lastObject - 500 && data.state === 2)) rankingPanelBG.style.opacity = 0 && deRankingPanel();
+
+    if (data.state == 2) {
+        upperPart.style.transform = "none";
+
+        if (leaderboardTab === "1") document.getElementById("leaderboardx").style.opacity = data.settings.leaderboard.visible === true ? 0 : 1;
+
+        setupMapScores(data.beatmap.id, data.play.playerName, countryToggle);
+
+        if (tempSlotLength !== tempMapScores.length) {
+            tempSlotLength = tempMapScores.length;
         }
-
-        if (tempTimeCurrent >= tempTimeFull - 50000 && gameState === 2 && !apiGetSet) fetchData();
-
-        if (tempTimeCurrent >= tempTimeFull + 200 && gameState === 2) { rankingPanelBG.style.opacity = 1; keys.style.opacity = 0; }
-
-        if (rankingPanelBG.style.opacity !== 1 && gameState === 2 && tempTimeCurrent >= tempTimeFull + 700 || gameState === 7) {
-            if (!rankingPanelSet) setupRankingPanel();
-            if (tempGrade !== "")
-                if (!isHidden) rankingResult.style.backgroundImage = `url('./static/rankings/${tempGrade}.png')`;
-                else if (tempGrade === "S" || tempGrade === "SS") rankingResult.style.backgroundImage = `url('./static/rankings/${tempGrade}H.png')`;
-                else rankingResult.style.backgroundImage = `url('./static/rankings/${tempGrade}.png')`;
-        } else if (!(tempTimeCurrent >= tempTimeFull - 500 && gameState === 2)) rankingPanelBG.style.opacity = 0 && deRankingPanel();
-
-        if (gameState == 2) {
-            upperPart.style.transform = "none";
-
-            if (leaderboardTab === "1") document.getElementById("leaderboardx").style.opacity = data.gameplay.leaderboard.isVisible === true ? 0 : 1;
-
-            setupMapScores(tempMapID, tempUsername, countryToggle);
-
-            if (tempSlotLength !== tempMapScores.length) {
-                tempSlotLength = tempMapScores.length;
-            }
 
             document.getElementById("leaderboardx").style.transform = "none";
 
@@ -835,19 +710,19 @@ socket.onmessage = (event) => {
                 ourplayerContainer.innerHTML = `
                     <div id="ourplayerAva" style="background-image: url('https://a.ppy.sh/${tempUID}')" class="leaderboardAvatar"></div>
                     <div class="playerStatsContainer">
-                    <div id="ourplayerName" style="width: 180px;">${tempUsername}</div>
+                    <div id="ourplayerName" style="width: 180px;">${data.play.playerName}</div>
                     ${grader(
-                        data.gameplay.hits["300"],
-                        data.gameplay.hits["100"],
-                        data.gameplay.hits["50"],
-                        data.gameplay.hits["0"],
+                        data.play.hits["300"],
+                        data.play.hits["100"],
+                        data.play.hits["50"],
+                        data.play.hits["0"],
                         tempMods.search("HD")
                     )}
                     <div id="ourplayerScore" style="font-size: 15px; font-family: Torus; width: 100px;">${new Intl.NumberFormat().format(
-                        Number(data.gameplay.score)
+                        Number(data.play.score)
                     )}</div>
-                    <div id="ourplayerCombo" style="font-size: 15px; font-family: Torus; width: 50px;">${data.gameplay.combo.max}x</div>
-                    <div id="ourplayerAcc" style="font-size: 15px; font-family: Torus; width: 60px;">${data.gameplay.accuracy.toFixed(2)}%</div>
+                    <div id="ourplayerCombo" style="font-size: 15px; font-family: Torus; width: 50px;">${data.play.combo.max}x</div>
+                    <div id="ourplayerAcc" style="font-size: 15px; font-family: Torus; width: 60px;">${data.play.accuracy.toFixed(2)}%</div>
                     ${$("#" + minimodsContainerOP.id).prop("outerHTML")}
                     </div>
                 `;
@@ -869,7 +744,7 @@ socket.onmessage = (event) => {
                     }
                 }
 
-            if (interfaceID == 1 && gameState == 2) {
+            if (data.settings.interfaceVisible = true && data.state == 2) {
                 upperPart.style.transform = "translateY(-200px)";
             } else {
                 smallStats.style.transform = "none";
@@ -881,19 +756,17 @@ socket.onmessage = (event) => {
                 URCont.style.transform = "none";
             }
         }
-    }
 
-    if (tempMapScores.length > 0) if (tempScore >= tempMapScores[playerPosition - 2]) playerPosition--;
+    if (tempMapScores.length > 0) if (data.play.score >= tempMapScores[playerPosition - 2]) playerPosition--;
 
-    if (data.gameplay.hp.smooth > 0) {
-        hp.style.clipPath = `polygon(${(1 - data.gameplay.hp.smooth / 200) * 40 + 6.3}% 0%, ${(data.gameplay.hp.smooth / 200) * 40 + 53.7}% 0%, ${
-            (data.gameplay.hp.smooth / 200) * 40 + 53.7
-        }% 100%, ${(1 - data.gameplay.hp.smooth / 200) * 40 + 6.3}% 100%)`;
+    if (data.play.healthBar.smooth > 0) {
+        hp.style.clipPath = `polygon(${(1 - data.play.healthBar.smooth / 200) * 40 + 6.3}% 0%, ${(data.play.healthBar.smooth / 200) * 40 + 53.7}% 0%, ${
+            (data.play.healthBar.smooth / 200) * 40 + 53.7
+        }% 100%, ${(1 - data.play.healthBar.smooth / 200) * 40 + 6.3}% 100%)`;
     } else {
         hp.style.clipPath = `polygon(6.3% 0, 93.7% 0, 93.7% 100%, 6.3% 100%)`;
     }
 };
-
 let config = {
     type: "line",
     data: {
@@ -1331,7 +1204,7 @@ async function getMapScores(beatmapID) {
 async function postDNTT(beatmap_id) {
     try {
         let rawData = null;
-        const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/scores`).then((response) => {
+        const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/countryvn`).then((response) => {
             // rawData = response.data.data;
             rawData = response.data;
         });

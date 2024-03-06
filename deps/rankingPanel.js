@@ -77,13 +77,14 @@ async function fetchData() {
 }
 
 async function setupRankingPanel() {
+    let data = JSON.parse(event.data)
     rankingPanelSet = true;
     rankingPanelBG.style.opacity = 1;
     
     document.getElementById("strainGraph").style.opacity = 0;
 
     rankingPanel.style.opacity = '1';
-    playerName.innerHTML = tempUsername;
+    playerName.innerHTML = data.resultsScreen.name;
 
     mapContainerR.style.transform = "translateY(0)";
     statSection.style.transform = "translateY(0)";
@@ -92,18 +93,18 @@ async function setupRankingPanel() {
     rankingResult.style.transform = "translateY(0)";
     document.getElementById("modContainer").style.transform = "translateY(0)";
 
-    playerName.innerHTML = tempUsername;
+    playerName.innerHTML = data.resultsScreen.name;
 
-    rCS.innerHTML = `CS:${tempCS}`;
-    rAR.innerHTML = `AR:${tempAR}`;
-    rOD.innerHTML = `OD:${tempOD}`;
-    rHP.innerHTML = `HP:${tempHPDr}`;
-    rSR.innerHTML = `SR:${tempSR}`;
+    rCS.innerHTML = `CS:${data.beatmap.stats.cs.converted}`;
+    rAR.innerHTML = `AR:${data.beatmap.stats.ar.converted}`;
+    rOD.innerHTML = `OD:${data.beatmap.stats.od.converted}`;
+    rHP.innerHTML = `HP:${data.beatmap.stats.hp.converted}`;
+    rSR.innerHTML = `SR:${data.beatmap.stats.stars.total}`;
 
-    mapArtistTitle.innerHTML = tempMapArtist + ' - ' + tempMapTitle;
-    mapDifficulty.innerHTML = `${tempMapDiff}`;
-    mapCreator.innerHTML = `Mapped by ${tempMapper}`;
-    switch (tempRankedStatus) {
+    mapArtistTitle.innerHTML = data.beatmap.artist + ' - ' + data.beatmap.title;
+    mapDifficulty.innerHTML = data.beatmap.version;
+    mapCreator.innerHTML = `Mapped by ${data.beatmap.mapper}`;
+    switch (data.beatmap.status.number) {
         case 4:
             rankedStatus.style.backgroundImage = `url('./static/state/ranked.png')`;
             break;
@@ -119,17 +120,17 @@ async function setupRankingPanel() {
             break;
     }
 
-    scoreResult.innerHTML = numberWithCommas(tempScore);
-    accResult.innerHTML = tempAcc.toFixed(2) + '%';
-    comboResult.innerHTML = tempMaxCombo + 'x';
+    scoreResult.innerHTML = numberWithCommas(data.resultsScreen.score);
+    accResult.innerHTML = data.play.accuracy.toFixed(2) + '%';
+    comboResult.innerHTML = data.resultsScreen.maxCombo + 'x';
 
-    URResult.innerHTML = tempURIndex.toFixed(2) + ' UR';
-    r100.innerHTML = temp100;
-    r50.innerHTML = temp50;
-    r0.innerHTML = temp0;
-    rsb.innerHTML = tempsliderBreaks;
-    sBPM.innerHTML = `${tempBPM} BPM`;
-    ppResult.innerHTML = tempPP + 'pp';
+    URResult.innerHTML = data.play.unstableRate.toFixed(2) + ' UR';
+    r100.innerHTML = data.resultsScreen.hits[100];
+    r50.innerHTML = data.resultsScreen.hits[50];
+    r0.innerHTML = data.resultsScreen.hits[0];
+    rsb.innerHTML = data.play.hits.sliderBreaks;
+    sBPM.innerHTML = `${data.beatmap.stats.bpm.common} BPM`;
+    ppResult.innerHTML = data.play.pp.current.toFixed(0) + 'pp';
 
     resultRecorder.style.transform = 'none';
 }
