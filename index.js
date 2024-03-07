@@ -384,9 +384,14 @@ socket.onmessage = (event) => {
             tickPos = 0;
             tempAvg = 0;
             
+            comboCont.style.transform = `translateX(${data.beatmap.stats.od.original * 11}px)`;
+            ppCont.style.transform = `translateX(${data.beatmap.stats.od.original * -11}px)`;
+            l50.style.width = `${450 - (22 * data.beatmap.stats.od.original)}px`;
+            l100.style.width = `${315 - (18 * data.beatmap.stats.od.original)}px`;
+            l300.style.width = `${180 - (13.5 * data.beatmap.stats.od.original)}px`;
             URCont.style.transform = "translateY(200px)";
             comboCont.style.width = "auto";
-            ppCont.style.width = "35px";
+            ppCont.style.width = "30px";
             avgHitError.style.transform = "translateX(0)";
 
             bottom.style.transform = "translateY(300px)";
@@ -496,7 +501,7 @@ socket.onmessage = (event) => {
             else if (tempMods.search("DT") !== -1 && tempMods.search("EZ") !== -1) {
                 sMods.innerHTML = "EZDT/NC(HD)(FL)";
             }
-            else if (tempMods.search("DT") !== -1) {
+            else if (tempMods.search("DT") !== -1 || tempMods.search("NC") !== -1) {
                 sMods.innerHTML = "(HD)DT/NC";
             }
             else if (tempMods.search("HR") !== -1) {
@@ -551,15 +556,15 @@ socket.onmessage = (event) => {
             calculate_od(data.beatmap.stats.od.original);
 
             tempWidth = tempPP + " / " + tempPPfc + "pp";
-            ppCont.style.width = `${(tempWidth.length + Math.floor(tempPP/1000) + Math.floor(tempPPfc/1000))*16}px`;
+            ppCont.style.width = `${(tempWidth.length + Math.floor(tempPP/1000) + Math.floor(tempPPfc/1000))*14.3}px`;
 
             tempWidth = data.play.combo.current
             if (CMCombo.style.opacity == 1)
                 tempWidth += " / " + data.play.combo.max;
             tempWidth += "0x";
             comboCont.style.width = `${
-                (tempWidth.length + (Math.floor(data.play.combo.current/1000)))*13 +
-                (CMCombo.style.opacity == 1 ? 6 + (Math.floor(data.play.combo.max/1000))*6 : 0)
+                (tempWidth.length + (Math.floor(data.play.combo.current/1000)))*12.5 +
+                (CMCombo.style.opacity == 1 ? 1 + (Math.floor(data.play.combo.max/1000))*1 : 0)
             }px`;
 
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
@@ -568,6 +573,7 @@ socket.onmessage = (event) => {
             l50.style.width = `${450 - (22 * OD)}px`;
             l100.style.width = `${315 - (18 * OD)}px`;
             l300.style.width = `${180 - (13.5 * OD)}px`;
+
             if (tempMods.search("HR") !== -1 && data.beatmap.stats.od.converted >= 10) {
                 calculate_od(10);
                 comboCont.style.transform = `translateX(${10 * 11}px)`;
@@ -644,8 +650,8 @@ socket.onmessage = (event) => {
     }
 
     if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5000 && data.beatmap.time.live <= data.beatmap.time.firstObject + 11900 && data.state == 2) {
-        recorder.style.transform = "translateX(600px)";
-        if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5500) recorderName.style.transform = "translateX(600px)";
+        recorder.style.transform = "translateX(-600px)";
+        if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5500) recorderName.style.transform = "translateX(-600px)";
     } else {
         recorder.style.transform = "none";
         recorderName.style.transform = "none";
