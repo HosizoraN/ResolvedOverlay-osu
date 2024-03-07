@@ -564,7 +564,7 @@ socket.onmessage = (event) => {
             tempWidth += "0x";
             comboCont.style.width = `${
                 (tempWidth.length + (Math.floor(data.play.combo.current/1000)))*12.5 +
-                (CMCombo.style.opacity == 1 ? 1 + (Math.floor(data.play.combo.max/1000))*1 : 0)
+                (CMCombo.style.opacity == 1 ? 7 + (Math.floor(data.play.combo.max/1000))*7 : 0)
             }px`;
 
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
