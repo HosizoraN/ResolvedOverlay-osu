@@ -22,7 +22,7 @@ class KeyOverlay {
         this.tile = null
     }
 
-    update(key, color) {
+    update(key, color, colortap) {
         if (key.isPressed == true) {
             if (!this.tile){
                 this.tile = tileWrapperNode.cloneNode(true)
@@ -31,7 +31,7 @@ class KeyOverlay {
             }
             if (this.keyText && key.count !== 0) this.keyText.innerText = key.count
             
-            this.keyField.style.backgroundColor = "var(--keyOnTapColor)"
+            this.keyField.style.backgroundColor = colortap
         } else {
             if (this.tile) {
                 this.tile.end = true
