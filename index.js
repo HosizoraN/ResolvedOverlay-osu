@@ -165,7 +165,7 @@ let animation = {
         suffix: "%",
     }),
     score: new CountUp("score", 0, 0, 0, 0.2, {
-        useEasing: true,
+        useEasing: false,
         useGrouping: true,
         separator: " ",
         decimal: ".",
@@ -315,10 +315,10 @@ keypress.onmessage = (event) => {
         Mouse2Cont.style.transform = 'translateY(-10px)';
     }
 
-    k1.update(keypress.k1, `rgb(${avatarColor1})`)
-    k2.update(keypress.k2, `rgb(${avatarColor1})`)
-    m1.update(keypress.m1, `rgb(${avatarColor1})`)
-    m2.update(keypress.m2, `rgb(${avatarColor1})`)
+    k1.update(keypress.k1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    k2.update(keypress.k2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    m1.update(keypress.m1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    m2.update(keypress.m2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
 }
 
 legacysocket.onmessage = (event) => {
@@ -372,8 +372,8 @@ socket.onmessage = (event) => {
         mapContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
         mapContainer.style.backgroundPosition = "50% 50%";
 
-        if (data.state !== 2) {
-            if (data.state !== 7) { deRankingPanel(); }
+        if (data.state.number !== 2) {
+            if (data.state.number !== 7) { deRankingPanel(); }
 
             keys.style.opacity = 0;
 
@@ -384,14 +384,23 @@ socket.onmessage = (event) => {
             tickPos = 0;
             tempAvg = 0;
             
-            comboCont.style.transform = `translateX(${data.beatmap.stats.od.original * 11}px)`;
-            ppCont.style.transform = `translateX(${data.beatmap.stats.od.original * -11}px)`;
-            l50.style.width = `${450 - (22 * data.beatmap.stats.od.original)}px`;
-            l100.style.width = `${315 - (18 * data.beatmap.stats.od.original)}px`;
-            l300.style.width = `${180 - (13.5 * data.beatmap.stats.od.original)}px`;
+            if (data.beatmap.stats.od.converted >= 10) {
+                comboCont.style.transform = `translateX(${10 * 11}px)`;
+                ppCont.style.transform = `translateX(${10 * -11}px)`;
+                l50.style.width = `${450 - (22 * 10)}px`;
+                l100.style.width = `${315 - (18 * 10)}px`;
+                l300.style.width = `${180 - (13.5 * 10)}px`;
+            }
+            else {
+                comboCont.style.transform = `translateX(${data.beatmap.stats.od.original * 11}px)`;
+                ppCont.style.transform = `translateX(${data.beatmap.stats.od.original * -11}px)`;
+                l50.style.width = `${450 - (22 * data.beatmap.stats.od.original)}px`;
+                l100.style.width = `${315 - (18 * data.beatmap.stats.od.original)}px`;
+                l300.style.width = `${180 - (13.5 * data.beatmap.stats.od.original)}px`;
+            }
+
+            ppCont.style.width = "80px";
             URCont.style.transform = "translateY(200px)";
-            comboCont.style.width = "auto";
-            ppCont.style.width = "30px";
             avgHitError.style.transform = "translateX(0)";
 
             bottom.style.transform = "translateY(300px)";
@@ -444,10 +453,11 @@ socket.onmessage = (event) => {
         tempTotalAvg = 0;
         tempTotalWeighted = 0;
         tempAvg = 0;
+
         score.innerHTML = data.play.score;
         animation.score.update(score.innerHTML);
 
-        acc.innerHTML = data.play.accuracy;
+        acc.innerHTML = data.play.accuracy.toFixed(2) + "%";
         animation.acc.update(acc.innerHTML);
 
         onepart = 490 / data.beatmap.time.lastObject;
@@ -490,7 +500,7 @@ socket.onmessage = (event) => {
                 OD = (500 / 667) * data.beatmap.stats.od.converted + -2210 / 667;
             }
         }
-        if (data.beatmap.status.number === 4 || data.beatmap.status.number === 7 || data.beatmap.status.number === 6) {
+        if (data.beatmap.status.number == 4 || data.beatmap.status.number == 7 || data.beatmap.status.number == 6) {
             sMods.style.opacity = 1;
             if (tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1) {
                 sMods.innerHTML = "(HD)DT(HR)";
@@ -541,6 +551,14 @@ socket.onmessage = (event) => {
         CMCombo.style.width = "0px";
         slash.innerHTML = "";
     }
+    if (data.beatmap.time.live >= data.beatmap.time.firstObject) {
+        ppFC.style.opacity = 1;
+        ppFC.style.width = "auto";
+    }
+    else {
+        ppFC.style.opacity = 0;
+        ppFC.style.width = "0px";
+    }
 
     if (data.play.hitErrorArray !== null) {
         tempSmooth = smooth(data.play.hitErrorArray, 4);
@@ -555,16 +573,21 @@ socket.onmessage = (event) => {
             currentErrorValue = data.play.hitErrorArray[tempHitErrorArrayLength - 1];
             calculate_od(data.beatmap.stats.od.original);
 
-            tempWidth = tempPP + " / " + tempPPfc + "pp";
-            ppCont.style.width = `${(tempWidth.length + Math.floor(tempPP/1000) + Math.floor(tempPPfc/1000))*14.3}px`;
+            tempWidth = tempPP + " / " + "pp" || "60px";
+            if (ppFC.style.opacity == 1)
+                tempWidth += tempPPfc;
+            ppCont.style.width = `${
+                (tempWidth.length + (Math.floor(tempPP/1000)))*13 +
+                (ppFC.style.opacity == 1 ? 15 + (Math.floor(tempPPfc/1000))*15 : 0)
+            }px`;
 
             tempWidth = data.play.combo.current
             if (CMCombo.style.opacity == 1)
                 tempWidth += " / " + data.play.combo.max;
             tempWidth += "0x";
             comboCont.style.width = `${
-                (tempWidth.length + (Math.floor(data.play.combo.current/1000)))*12.5 +
-                (CMCombo.style.opacity == 1 ? 7 + (Math.floor(data.play.combo.max/1000))*7 : 0)
+                (tempWidth.length + (Math.floor(data.play.combo.current/1000)))*14 +
+                (CMCombo.style.opacity == 1 ? 2 + (Math.floor(data.play.combo.max/1000))*2 : 0)
             }px`;
 
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
@@ -649,7 +672,7 @@ socket.onmessage = (event) => {
          leaderboardSet = 0;
     }
 
-    if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5000 && data.beatmap.time.live <= data.beatmap.time.firstObject + 11900 && data.state == 2) {
+    if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5000 && data.beatmap.time.live <= data.beatmap.time.firstObject + 11900 && data.state.number == 2) {
         recorder.style.transform = "translateX(-600px)";
         if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5500) recorderName.style.transform = "translateX(-600px)";
     } else {
@@ -657,19 +680,19 @@ socket.onmessage = (event) => {
         recorderName.style.transform = "none";
     }
 
-    if (data.beatmap.time.live >= data.beatmap.time.lastObject - 10000 && data.state === 2 && !apiGetSet) fetchData();
+    if (data.beatmap.time.live >= data.beatmap.time.lastObject - 10000 && data.state.number === 2 && !apiGetSet) fetchData();
 
-    if (data.beatmap.time.live >= data.beatmap.time.lastObject + 800 && data.state === 2) { rankingPanelBG.style.opacity = 1; keys.style.opacity = 0; }
+    if (data.beatmap.time.live >= data.beatmap.time.lastObject + 800 && data.state.number === 2) { rankingPanelBG.style.opacity = 1; keys.style.opacity = 0; }
 
-    if (rankingPanelBG.style.opacity !== 1 && data.state === 2 && data.beatmap.time.live >= data.beatmap.time.lastObject + 1200 || data.state === 7) {
+    if (rankingPanelBG.style.opacity !== 1 && data.state.number === 2 && data.beatmap.time.live >= data.beatmap.time.lastObject + 1200 || data.state.number === 7) {
         if (!rankingPanelSet) setupRankingPanel();
         if (data.resultsScreen.rank !== "")
             if (!isHidden) rankingResult.style.backgroundImage = `url('./static/rankings/${data.resultsScreen.rank}.png')`;
             else if (data.resultsScreen.rank === "S" || data.resultsScreen.rank === "X") rankingResult.style.backgroundImage = `url('./static/rankings/${data.resultsScreen.rank}H.png')`;
             else rankingResult.style.backgroundImage = `url('./static/rankings/${data.resultsScreen.rank}.png')`;
-    } else if (!(data.beatmap.time.live >= data.beatmap.time.lastObject - 500 && data.state === 2)) rankingPanelBG.style.opacity = 0 && deRankingPanel();
+    } else if (!(data.beatmap.time.live >= data.beatmap.time.lastObject - 500 && data.state.number === 2)) rankingPanelBG.style.opacity = 0 && deRankingPanel();
 
-    if (data.state == 2) {
+    if (data.state.number == 2) {
         upperPart.style.transform = "none";
 
         if (leaderboardTab === "1") document.getElementById("leaderboardx").style.opacity = data.settings.leaderboard.visible === true ? 0 : 1;
@@ -750,7 +773,7 @@ socket.onmessage = (event) => {
                     }
                 }
 
-            if (data.settings.interfaceVisible = true && data.state == 2) {
+            if (data.settings.interfaceVisible == true && data.state.number == 2) {
                 upperPart.style.transform = "translateY(-200px)";
             } else {
                 smallStats.style.transform = "none";
@@ -908,6 +931,7 @@ async function setupUser(name) {
     if (avatarColor) {
         avatarColor1 = `${avatarColor.rgb1[0]}, ${avatarColor.rgb1[1]}, ${avatarColor.rgb1[2]}`,
         avatarColor2 = `${avatarColor.rgb2[0]}, ${avatarColor.rgb2[1]}, ${avatarColor.rgb2[2]}`;
+        KeyTapColor = `${avatarColor.rgb1[0] + 20}, ${avatarColor.rgb1[1] + 20}, ${avatarColor.rgb1[2] + 20}`
 
         BarLeft.style.backgroundColor = `rgb(${avatarColor1})`;
         BarLeft.style.boxShadow = `0 0 10px 3px rgb(${avatarColor1})`;
@@ -926,7 +950,7 @@ async function setupUser(name) {
         ppCont.style.boxShadow = `0 0 5px 2px rgb(${avatarColor2})`;
 
     }
-    else avatarColor1 = '102, 102, 102',
+    else avatarColor1 = '102, 102, 102', separator
          avatarColor2 = '185, 185, 185';
 }
 
