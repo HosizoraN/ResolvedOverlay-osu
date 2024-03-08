@@ -931,7 +931,7 @@ async function setupUser(name) {
     if (avatarColor) {
         avatarColor1 = `${avatarColor.rgb1[0]}, ${avatarColor.rgb1[1]}, ${avatarColor.rgb1[2]}`,
         avatarColor2 = `${avatarColor.rgb2[0]}, ${avatarColor.rgb2[1]}, ${avatarColor.rgb2[2]}`;
-        KeyTapColor = `${avatarColor.rgb1[0] + 20}, ${avatarColor.rgb1[1] + 20}, ${avatarColor.rgb1[2] + 20}`
+        KeyTapColor = `${avatarColor.rgb1[0] + 80}, ${avatarColor.rgb1[1] + 80}, ${avatarColor.rgb1[2] + 80}`
 
         BarLeft.style.backgroundColor = `rgb(${avatarColor1})`;
         BarLeft.style.boxShadow = `0 0 10px 3px rgb(${avatarColor1})`;
