@@ -454,6 +454,7 @@ socket.onmessage = (event) => {
         tempTotalWeighted = 0;
         tempAvg = 0;
 
+        if (data.play.score == 0) { }
         score.innerHTML = data.play.score;
         animation.score.update(score.innerHTML);
 
@@ -1233,12 +1234,8 @@ async function getMapScores(beatmapID) {
 
 async function postDNTT(beatmap_id) {
     try {
-        let rawData = null;
-        const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/countryvn`).then((response) => {
-            // rawData = response.data.data;
-            rawData = response.data;
-        });
-        return rawData;
+        const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/global`);
+        return JSON.parse(data[0]);
     } catch (error) {
         console.error(error);
     }
@@ -1248,7 +1245,7 @@ async function postUserID(id) {
    try {
        let rawData = null;
        const data = await axios.get(`https://phubahosi.vercel.app/api/color/${id}`).then((response) => {
-            rawData = response.data //im confused :skull:
+            rawData = response.data
        });
        return rawData;
     } catch (error) {
