@@ -699,14 +699,14 @@ socket.onmessage = (event) => {
 
         setupMapScores(data.beatmap.id, data.play.playerName, countryToggle);
 
-        if (tempSlotLength !== tempMapScores.length) {
-            tempSlotLength = tempMapScores.length;
-        }
+            if (tempSlotLength !== tempMapScores.length) {
+                tempSlotLength = tempMapScores.length;
+            }
 
             document.getElementById("leaderboardx").style.transform = "none";
 
             setTimeout(() => {
-                if (!ourplayerSet && leaderboardEnable === "1") {
+                if (!ourplayerSet) {
                     ourplayerSet = 1;
                     ourplayerContainer = document.createElement("div");
                     ourplayerContainer.id = "ourplayer";
@@ -728,48 +728,54 @@ socket.onmessage = (event) => {
                         mods.id = tempMinimodsOP.substr(k, 2) + "OurPlayer";
                         mods.setAttribute("class", "minimods");
                         mods.style.backgroundImage = `url('./static/minimods/${tempMinimodsOP.substr(k, 2)}.png')`;
-                        mods.style.transform = `translateX(${(k / 2) * 10}px)`;
+                        mods.style.transform = `translateX(${(k * 3) * 10}px)`;
                         document.getElementById(`minimodsContainerOurPlayer`).appendChild(mods);
                         k++;
                     }
                 }
 
-                if (!tempUID) tempUID = "8266808";
+                if (!tempUID) tempUID = "12351533";
 
                 ourplayerContainer.innerHTML = `
                     <div id="ourplayerAva" style="background-image: url('https://a.ppy.sh/${tempUID}')" class="leaderboardAvatar"></div>
                     <div class="playerStatsContainer">
-                    <div id="ourplayerName" style="width: 180px;">${data.play.playerName}</div>
+                    <div id="ourplayerName" style="width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${tempUsername}</div>
                     ${grader(
-                        data.play.hits["300"],
-                        data.play.hits["100"],
-                        data.play.hits["50"],
-                        data.play.hits["0"],
-                        tempMods.search("HD")
+                        data.gameplay.hits["300"],
+                        data.gameplay.hits["100"],
+                        data.gameplay.hits["50"],
+                        data.gameplay.hits["0"],
+                        tempMods.search("HD"),
+                        tempMods.search("FL")
                     )}
                     <div id="ourplayerScore" style="font-size: 15px; font-family: Torus; width: 100px;">${new Intl.NumberFormat().format(
-                        Number(data.play.score)
+                        Number(data.gameplay.score)
                     )}</div>
-                    <div id="ourplayerCombo" style="font-size: 15px; font-family: Torus; width: 50px;">${data.play.combo.max}x</div>
-                    <div id="ourplayerAcc" style="font-size: 15px; font-family: Torus; width: 60px;">${data.play.accuracy.toFixed(2)}%</div>
-                    ${$("#" + minimodsContainerOP.id).prop("outerHTML")}
+                    <div id="ourplayerCombo" style="font-size: 15px; font-family: Torus; width: 50px; position: absolute; bottom: 6px;
+                    left: 180px;">${data.gameplay.combo.max}x</div>
+                    <div id="ourplayerPP" style="font-size: 15px; font-family: Torus; width: 50px; position: absolute; bottom: 6px;
+                    left: 250px;">${data.gameplay.pp.current.toFixed(0)}pp</div>
                     </div>
+                    <div class="playerStatsContainer2">
+                    <div id="ourplayerAcc" style="font-size: 15px; font-family: Torus; width: 60px;">${data.gameplay.accuracy.toFixed(2)}%</div>
+                    </div>
+                    ${$("#" + minimodsContainerOP.id).prop("outerHTML")}
                 `;
-            }, 1000);
+            });
 
             if (document.getElementById("ourplayer"))
-                if (playerPosition > 5) {
-                    leaderboard.style.transform = `translateY(${-(playerPosition - 6) * 75}px)`;
+                if (playerPosition > 9) {
+                    leaderboard.style.transform = `translateY(${-(playerPosition - 10) * 50}px)`;
                     document.getElementById("ourplayer").style.transform = `none`;
                 } else {
                     leaderboard.style.transform = "translateY(0)";
-                    document.getElementById("ourplayer").style.transform = `translateY(-${(6 - playerPosition) * 75}px)`;
+                    document.getElementById("ourplayer").style.transform = `translateY(-${(10 - playerPosition) * 50}px)`;
                 }
 
             if (tempSlotLength > 0)
                 for (var i = 1; i <= tempSlotLength; i++) {
                     if (i >= playerPosition && playerPosition !== 0 && document.getElementById(`slot${i}`)) {
-                        document.getElementById(`slot${i}`).style.transform = `translateY(75px)`;
+                        document.getElementById(`slot${i}`).style.transform = `translateY(50px)`;
                     }
                 }
 
@@ -1097,13 +1103,13 @@ async function setupMapScores(beatmapID, name, countryToggle) {
             let playerContainer = document.createElement("div");
             playerContainer.id = `slot${i}`;
             playerContainer.setAttribute("class", "playerContainer");
-            playerContainer.style.top = `${(i - 1) * 75}px`;
+            playerContainer.style.top = `${(i - 1) * 50}px`;
 
             let playerAvatarLB = `<div id="lb_ava${i}" style="background-image: url('https://a.ppy.sh/${
                 data[i - 1].user_id
             }')" class="leaderboardAvatar"></div>`;
 
-            let playerNameLB = `<div id="lb_name${i}" style="width: 180px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${
+            let playerNameLB = `<div id="lb_name${i}" style="width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${
                 data[i - 1].username
             }</div>`;
 
@@ -1111,7 +1117,7 @@ async function setupMapScores(beatmapID, name, countryToggle) {
                 Number(data[i - 1].score)
             )}</div>`;
 
-            let playerComboLB = `<div id="lb_combo${i}" style="font-size: 15px; font-family: Torus; width: 50px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${
+            let playerComboLB = `<div id="lb_combo${i}" style="font-size: 15px; font-family: Torus; width: 50px; position: absolute; right: 90px; bottom: 5px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${
                 data[i - 1].maxcombo
             }x</div>`;
 
@@ -1121,9 +1127,14 @@ async function setupMapScores(beatmapID, name, countryToggle) {
                 parseInt(data[i - 1].count50),
                 parseInt(data[i - 1].countmiss)
             );
-            // console.log(raw_playerAcc);
-            let playerAccLB = `<div id="lb_acc${i}" style="font-size: 15px; font-family: Torus; width: 60px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${raw_playerAcc}%</div>`;
+            let raw_playerPP = Math.round(data [i - 1].pp) + "pp"
 
+            // console.log(raw_playerAcc);
+            let playerAccLB = `<div id="lb_acc${i}" style="font-size: 15px; font-family: Torus; width: 60px; position: absolute; right: 80px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${raw_playerAcc}%</div>`;
+            let playerPPLB = `<div id="lb_acc${i}" style="font-size: 15px; font-family: Torus; width: 60px; position: absolute; right: 10px; bottom: 5px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${raw_playerPP}</div>`;
+            if (tempRankedStatus == 7) {
+                playerPPLB = `<div id="lb_acc${i}" style="font-size: 15px; font-family: Torus; width: 60px; position: absolute; right: 7px; bottom: 5px; color: #FF7575; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">❤</div>`;
+            }
             let playerGradeLB;
             let lb_grade = grader_text(
                 parseInt(data[i - 1].count300),
@@ -1171,7 +1182,8 @@ async function setupMapScores(beatmapID, name, countryToggle) {
             ${playerGradeLB}
             ${playerScoreLB}
             ${playerComboLB}
-            ${playerAccLB}<div>
+            ${playerAccLB}
+            ${playerPPLB}<div>
         `;
 
             let minimodsContainer = document.createElement("div");
@@ -1189,7 +1201,7 @@ async function setupMapScores(beatmapID, name, countryToggle) {
                 mods.id = tempModsLiteral.substr(k, 2) + i;
                 mods.setAttribute("class", "minimods");
                 mods.style.backgroundImage = `url('./static/minimods/${tempModsLiteral.substr(k, 2)}.png')`;
-                mods.style.transform = `translateX(${(k / 2) * 10}px)`;
+                mods.style.transform = `translateX(${(k * 3) * 10}px)`;
                 document.getElementById(`minimodsContainerSlot${i}`).appendChild(mods);
                 k++;
             }
@@ -1233,12 +1245,8 @@ async function getMapScores(beatmapID) {
 
 async function postDNTT(beatmap_id) {
     try {
-        let rawData = null;
-        const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/countryvn`).then((response) => {
-            // rawData = response.data.data;
-            rawData = response.data;
-        });
-        return rawData;
+        const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/global`);
+        return JSON.parse(data[0]);
     } catch (error) {
         console.error(error);
     }
