@@ -25,7 +25,7 @@ getAPI();
 // START
 let socket = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2");
 let legacysocket = new ReconnectingWebSocket("ws://127.0.0.1:24050/ws");
-let keypress = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2/keys");
+let keypress = new ReconnectingWebSocket("ws://127.0.0.1:24050/websocket/v2/precise");
 let mapid = document.getElementById("mapid");
 let mapBG = document.getElementById("mapBG");
 let rankingPanelBG = document.getElementById("rankingPanelBG");
@@ -282,7 +282,7 @@ window.onload = function () {
 keypress.onmessage = (event) => {
     let keypress = JSON.parse(event.data);
 
-    if (keypress.k1.count > 0) {
+    if (keypress.keys.k1.count > 0) {
         Key1Cont.style.opacity = 1
         Key1Cont.style.transform = 'translateY(0)';
     }
@@ -290,7 +290,7 @@ keypress.onmessage = (event) => {
         Key1Cont.style.opacity = 0
         Key1Cont.style.transform = 'translateY(-10px)';
     }
-    if (keypress.k2.count > 0) {
+    if (keypress.keys.k2.count > 0) {
         Key2Cont.style.opacity = 1
         Key2Cont.style.transform = 'translateY(0)';
     }
@@ -298,7 +298,7 @@ keypress.onmessage = (event) => {
         Key2Cont.style.opacity = 0
         Key2Cont.style.transform = 'translateY(-10px)';
     }
-    if (keypress.m1.count > 0) {
+    if (keypress.keys.m1.count > 0) {
         Mouse1Cont.style.opacity = 1
         Mouse1Cont.style.transform = 'translateY(0)';
     }
@@ -306,7 +306,7 @@ keypress.onmessage = (event) => {
         Mouse1Cont.style.opacity = 0
         Mouse1Cont.style.transform = 'translateY(-10px)';
     }
-    if (keypress.m2.count > 0) {
+    if (keypress.keys.m2.count > 0) {
         Mouse2Cont.style.opacity = 1
         Mouse2Cont.style.transform = 'translateY(0)';
     }
@@ -315,10 +315,10 @@ keypress.onmessage = (event) => {
         Mouse2Cont.style.transform = 'translateY(-10px)';
     }
 
-    k1.update(keypress.k1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
-    k2.update(keypress.k2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
-    m1.update(keypress.m1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
-    m2.update(keypress.m2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    k1.update(keypress.keys.k1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    k2.update(keypress.keys.k2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    m1.update(keypress.keys.m1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    m2.update(keypress.keys.m2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
 }
 
 legacysocket.onmessage = (event) => {
@@ -344,7 +344,7 @@ legacysocket.onmessage = (event) => {
 
     if (seek !== legacysocket.menu.bm.time.current && legacysocket.menu.bm.time.mp3 !== undefined && legacysocket.menu.bm.time.mp3 !== 0) {
         seek = legacysocket.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 1.58 +'px';
+        progressChart.style.width = onepart * seek / 1.7 +'px';
     }
 }
 
