@@ -347,9 +347,9 @@ legacysocket.onmessage = (event) => {
 		onepart = 1400/fullTime;
 	}
 
-    if (seek !== legacysocket.menu.bm.time.current && legacysocket.menu.bm.time.mp3 !== undefined && legacysocket.menu.bm.time.mp3 !== 0) {
+    if (seek !== legacysocket.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
         seek = legacysocket.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 4.5 +'px';
+        progressChart.style.width = onepart * seek / 1.56 +'px';
     }
 }
 
