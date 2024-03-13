@@ -490,3 +490,8 @@
 	height: 1800px;
 	transition: ease-in-out 500ms;
 }
+.mods {
+	width: 60px;
+	height: 60px;
+	background-size: 100%;
+}
