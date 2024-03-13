@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="css/odometr.css" />
 		<link rel="stylesheet" href="css/all.min.css">
 		<link rel="stylesheet" href="css/keyOverlay.css"/>
+		<link rel="stylesheet" href="css/animate.css" />
 		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 		<script src="deps/average-color.js"></script>
@@ -71,10 +72,21 @@
 			</div>
 			<div id="bottom">
 					<div id="comboCont">
-						<span id="combo" class="odometer"></span><span id="slash" class="statictext"></span><span id="CMCombo" class="odometer"></span><span class="statictext">x</span>
+						<div class="combo_handler" id="combo_text">
+						<span class="combo_text">
+							<span id="combo" class="odometer"></span>
+							<span id="combo_x" class="statictext" style="right: 3px;">x</span>
+							<span id="CMCombo" class="statictext" style="transition-duration: 300ms"></span>
+						</span>
+						</div>
 					</div>
 					<div id="ppCont">
-						<span id="pp" class="odometer"></span><span class="statictext"> / </span><span id="ppFC" class="odometer"></span><span class="statictext">pp</span>
+						<span class="pp_text" id="pp_textbox">
+							<span class="odometer" id="pp"></span>
+							<span class="statictext"> / </span>
+							<span class="odometer" id="ppFC"></span>
+							<span class="statictext" style="right: 5px;">pp</span>
+						</span>
 					</div>
 					<div id="URIndex" class="odometer unstableRate"><b></b></div>
 					<div id="URText">Unstable Rate</div>

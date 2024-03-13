@@ -146,7 +146,7 @@ async function deRankingPanel() {
     player.style.transform = "translateX(-620px)";
     result.style.transform = "translateX(620px)";
     rankingResult.style.transform = "translateY(800px)";
-    document.getElementById("modContainer").style.transform = "translateY(200px)";
+    document.getElementById("modContainer").style.transform = "translateY(300px)";
 
     document.getElementById("strainGraph").style.opacity = 1;
 }

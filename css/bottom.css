@@ -85,53 +85,53 @@
 	border-bottom-right-radius: 10px;
 	box-shadow: 0px 5px 20px 3px rgba(0, 0, 0, 0.4);
 }
-#combo {
+#combo,
+#CMCombo,
+#combo_x,
+#pp,
+#ppFC {
 	font-size: 30px;
 	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
 }
-#CMCombo {
-	font-size: 30px;
-	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
-}
+.combo_handler {
+	position: absolute;
+	transition-duration: 500ms;
+  }
+  
+  .combo_handler .combo_text .pp_text {
+	display: inline-block;
+  }
 #comboCont {
 	position: absolute;
+	display: flex;
+	text-align: center;
 	border-radius: 10px;
-	padding: 3px 10px 3px 10px;
+	padding: 3px 15px 3px 15px;
 	bottom: 10px;
 	height: 45px;
-	transition: width 100ms ease-out;
+	transition: width 300ms ease-out;
 	transition: ease-in-out 500ms;
 	z-index: 0;
 	white-space: nowrap;
-	text-align: center;
 	overflow: hidden;
 	right: 1195px;
 	background-color: #161616;
 }
 #ppCont {
 	position: absolute;
+	display: flex;
+	text-align: center;
 	border-radius: 10px;
 	padding: 3px 15px 3px 15px;
 	bottom: 10px;
 	height: 45px;
-	transition: width 100ms ease-out;
+	transition: width 300ms ease-out;
 	transition: ease-in-out 500ms;
-	text-align: center;
 	z-index: 0;
 	white-space: nowrap;
 	overflow: hidden;
 	left: 1195px;
 	background-color: #161616;
-}
-#pp {
-	font-size: 30px;
-	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
-}
-#ppFC {
-	font-size: 30px;
-	text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
-	transition: opacity ease-in-out 200ms;
-	transition: width ease-in-out 200ms;
 }
 #URmidbar{
 	position: absolute;

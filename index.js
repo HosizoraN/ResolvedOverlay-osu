@@ -57,6 +57,7 @@ let score = document.getElementById("score");
 let acc = document.getElementById("acc");
 let combo = document.getElementById("combo");
 let CMCombo = document.getElementById("CMCombo");
+let combo_x = document.getElementById("combo_x");
 
 // ACCURACY INFO
 let bottom = document.getElementById("bottom");
@@ -70,6 +71,7 @@ let hsliderBreaks = document.getElementById("hsb");
 // PERFORMANCE POINTS
 let pp = document.getElementById("pp");
 let ppFC = document.getElementById("ppFC");
+let pp_textbox = document.getElementById('pp_text');
 
 // PLAYER INFO
 let username = document.getElementById("username");
@@ -235,6 +237,9 @@ let fullTime;
 let tempPP;
 let tempPPfc;
 
+let tempCombo;
+let tempMaxCombo;
+
 let OD = 0;
 let tickPos;
 let fullPos;
@@ -344,7 +349,7 @@ legacysocket.onmessage = (event) => {
 
     if (seek !== legacysocket.menu.bm.time.current && legacysocket.menu.bm.time.mp3 !== undefined && legacysocket.menu.bm.time.mp3 !== 0) {
         seek = legacysocket.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 1.7 +'px';
+        progressChart.style.width = onepart * seek / 4.5 +'px';
     }
 }
 
@@ -365,12 +370,21 @@ socket.onmessage = (event) => {
         username.innerHTML = tempUsername;
         setupUser(tempUsername);
     }
+    
+    if (data.play.score == 0) { }
+    score.innerHTML = data.play.score;
+    animation.score.update(score.innerHTML);
 
-        data.folders.beatmap = data.folders.beatmap.replace(/#/g, "%23").replace(/%/g, "%25").replace(/\\/g, "/").replace(/'/g, "%27").replace(/ /g, "%20")
-        mapBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
-        rankingPanelBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
-        mapContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
-        mapContainer.style.backgroundPosition = "50% 50%";
+    acc.innerHTML = data.play.accuracy.toFixed(2) + "%";
+    animation.acc.update(acc.innerHTML);
+
+    onepart = 490 / data.beatmap.time.lastObject;
+
+    data.folders.beatmap = data.folders.beatmap.replace(/#/g, "%23").replace(/%/g, "%25").replace(/\\/g, "/").replace(/'/g, "%27").replace(/ /g, "%20")
+    mapBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
+    rankingPanelBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
+    mapContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
+    mapContainer.style.backgroundPosition = "50% 50%";
 
         if (data.state.number !== 2) {
             if (data.state.number !== 7) { deRankingPanel(); }
@@ -383,23 +397,7 @@ socket.onmessage = (event) => {
 
             tickPos = 0;
             tempAvg = 0;
-            
-            if (data.beatmap.stats.od.converted >= 10) {
-                comboCont.style.transform = `translateX(${10 * 11}px)`;
-                ppCont.style.transform = `translateX(${10 * -11}px)`;
-                l50.style.width = `${450 - (22 * 10)}px`;
-                l100.style.width = `${315 - (18 * 10)}px`;
-                l300.style.width = `${180 - (13.5 * 10)}px`;
-            }
-            else {
-                comboCont.style.transform = `translateX(${data.beatmap.stats.od.original * 11}px)`;
-                ppCont.style.transform = `translateX(${data.beatmap.stats.od.original * -11}px)`;
-                l50.style.width = `${450 - (22 * data.beatmap.stats.od.original)}px`;
-                l100.style.width = `${315 - (18 * data.beatmap.stats.od.original)}px`;
-                l300.style.width = `${180 - (13.5 * data.beatmap.stats.od.original)}px`;
-            }
 
-            ppCont.style.width = "80px";
             URCont.style.transform = "translateY(200px)";
             avgHitError.style.transform = "translateX(0)";
 
@@ -454,29 +452,20 @@ socket.onmessage = (event) => {
         tempTotalWeighted = 0;
         tempAvg = 0;
 
-        if (data.play.score == 0) { }
-        score.innerHTML = data.play.score;
-        animation.score.update(score.innerHTML);
-
-        acc.innerHTML = data.play.accuracy.toFixed(2) + "%";
-        animation.acc.update(acc.innerHTML);
-
-        onepart = 490 / data.beatmap.time.lastObject;
-        
-    if (tempMods !== data.play.mods.name) {
-        document.getElementById("modContainer").innerHTML = "";
-
-        tempMods = data.play.mods.name;
-
-        if (tempMods.search("HD") !== -1) 
-            isHidden = true;
-        else if (tempMods.search("FL") !== -1)
-            isHidden = true;
-        else
-            isHidden = false;
-
+        if (tempMods !== data.play.mods.name) {
+            document.getElementById("modContainer").innerHTML = "";
+    
+            tempMods = data.play.mods.name;
+    
+            if (tempMods.search("HD") !== -1) 
+                isHidden = true;
+            else if (tempMods.search("FL") !== -1)
+                isHidden = true;
+            else
+                isHidden = false;
+    
         let modsCount = tempMods.length;
-
+    
         for (var i = 0; i < modsCount; i++) {
             if (tempMods.substr(i, 2) !== "NM" || tempMods.substr(i, 2) !== "TD") {
                 let mods = document.createElement("div");
@@ -488,7 +477,7 @@ socket.onmessage = (event) => {
             }
             i++;
         }
-
+    
         if (OD !== data.beatmap.stats.od.converted) {
             if (data.play.mods.name.indexOf("DT") == -1 || data.play.mods.name.indexOf("NC") == -1) {
                 OD = data.beatmap.stats.od.converted;
@@ -501,6 +490,7 @@ socket.onmessage = (event) => {
                 OD = (500 / 667) * data.beatmap.stats.od.converted + -2210 / 667;
             }
         }
+
         if (data.beatmap.status.number == 4 || data.beatmap.status.number == 7 || data.beatmap.status.number == 6) {
             sMods.style.opacity = 1;
             if (tempMods.search("DT") !== -1 && tempMods.search("HR") !== -1) {
@@ -532,33 +522,104 @@ socket.onmessage = (event) => {
             sMods.style.opacity = 0;
         }
     }
-        combo.innerHTML = data.play.combo.current;
+    if (tempCombo !== data.play.combo.current) {
+        tempCombo = data.play.combo.current;
+        combo.innerHTML = tempCombo;
         animation.combo.update(combo.innerHTML);
+    }
+    if (tempMaxCombo !== data.play.combo.max) {
+        tempMaxCombo = data.play.combo.max;
+        CMCombo.innerHTML = " / " + data.play.combo.max + "x";
+    }
 
-    if (data.play.combo.max <= data.play.combo.current) {
-        CMCombo.innerHTML = "";
-        CMCombo.style.opacity = 0;
-        CMCombo.style.width = "0px";
-        slash.innerHTML = "";
-    }
-    else if (data.play.hits.sliderBreaks > 0 || data.play.hits[0] > 0 && data.play.combo.max >= data.play.combo.current) {
-        CMCombo.innerHTML = data.play.combo.max;
-        slash.innerHTML = " / ";
+    let isBreak = tempCombo < tempMaxCombo;
+
+    if (isBreak) {
         CMCombo.style.opacity = 1;
-        CMCombo.style.width = "auto";
+        combo_x.style.display = "none";
     } else {
-        CMCombo.innerHTML = "";
         CMCombo.style.opacity = 0;
-        CMCombo.style.width = "0px";
-        slash.innerHTML = "";
+        combo_x.style.display = "inline";
     }
+
+    if (data.play.combo.current < 10) { 
+        comboCont.style.width = `${35 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
+    }
+    if (data.play.combo.current >= 10 && data.play.combo.current < 100) { 
+        comboCont.style.width = `${50 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
+    }
+    if (data.play.combo.current >= 100 && data.play.combo.current < 1000) {
+        comboCont.style.width = `${65 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
+    }
+    if (data.play.combo.current >= 1000 && data.play.combo.current < 10000) {
+        comboCont.style.width = `${90 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
+    }
+    if (data.play.combo.current >= 10000 && data.play.combo.current < 1000) {
+        comboCont.style.width = `${100 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
+    }
+
+    function getMaxPxValue(x) {
+        if (x < 10) return 35;
+        if (x >= 10 && x < 100) return 50;
+        if (x >= 100 && x < 1000) return 73;
+        if (x >= 1000 && x < 10000) return 90;
+    }
+
+    //   function getTranslateValue(x) {
+    //     if (x < 10) return 150;
+    //     if (x >= 10 && x < 100) return 150;
+    //     if (x >= 100 && x < 1000) return 150;
+    //     if (x >= 1000 && x < 10000) return 150;
+    //   }
+
+    if (tempPP !== Math.round(data.play.pp.current)) {
+        tempPP = Math.round(data.play.pp.current);
+        pp.innerHTML = tempPP.toString();
+    }
+    if (tempPPfc !== Math.round(data.play.pp.fc)) {
+        tempPPfc = Math.round(data.play.pp.fc);
+        ppFC.innerHTML = tempPPfc.toString();
+    }
+
     if (data.beatmap.time.live >= data.beatmap.time.firstObject) {
         ppFC.style.opacity = 1;
         ppFC.style.width = "auto";
+        tempWidth = tempPP + " / " + tempPPfc + "pp";
     }
     else {
+        tempWidth = tempPP + " / pp";
         ppFC.style.opacity = 0;
         ppFC.style.width = "0px";
+    }
+
+    ppCont.style.width = `${
+    (tempWidth.length + (Math.floor(tempPP/1000)))*13 +
+    (ppFC.style.opacity == 1 ? 11 + (Math.floor(tempPPfc/1000))*11 : 0)}px`;
+
+    if (data.state.number == 2) {
+        calculate_od(data.beatmap.stats.od.original);
+        if (tempMods.search("HR") !== -1 && data.beatmap.stats.od.converted >= 10) {
+            calculate_od(10);
+            comboCont.style.transform = `translateX(${10 * 11}px)`;
+            ppCont.style.transform = `translateX(${10 * -11}px)`;
+            l50.style.width = `${450 - (22 * 10)}px`;
+            l100.style.width = `${315 - (18 * 10)}px`;
+            l300.style.width = `${180 - (13.5 * 10)}px`;
+        }
+        else if (tempMods.search("EZ") !== -1) {
+            comboCont.style.transform = `translateX(${OD * 5}px)`;
+            ppCont.style.transform = `translateX(${OD * -5}px)`;
+            l50.style.width = `${450 - (11 * OD)}px`;
+            l100.style.width = `${315 - (8.7 * OD)}px`;
+            l300.style.width = `${180 - (6.5 * OD)}px`;
+        }
+        else {
+            comboCont.style.transform = `translateX(${OD * 11}px)`;
+            ppCont.style.transform = `translateX(${OD * -11}px)`;
+            l50.style.width = `${450 - (22 * OD)}px`;
+            l100.style.width = `${315 - (18 * OD)}px`;
+            l300.style.width = `${180 - (13.5 * OD)}px`;
+        }
     }
 
     if (data.play.hitErrorArray !== null) {
@@ -572,47 +633,8 @@ socket.onmessage = (event) => {
             fullPos = (-11 * OD + 225);
             tickPos = data.play.hitErrorArray[tempHitErrorArrayLength - 1] / 450 * 510;
             currentErrorValue = data.play.hitErrorArray[tempHitErrorArrayLength - 1];
-            calculate_od(data.beatmap.stats.od.original);
-
-            tempWidth = tempPP + " / " + "pp" || "60px";
-            if (ppFC.style.opacity == 1)
-                tempWidth += tempPPfc;
-            ppCont.style.width = `${
-                (tempWidth.length + (Math.floor(tempPP/1000)))*13 +
-                (ppFC.style.opacity == 1 ? 15 + (Math.floor(tempPPfc/1000))*15 : 0)
-            }px`;
-
-            tempWidth = data.play.combo.current
-            if (CMCombo.style.opacity == 1)
-                tempWidth += " / " + data.play.combo.max;
-            tempWidth += "0x";
-            comboCont.style.width = `${
-                (tempWidth.length + (Math.floor(data.play.combo.current/1000)))*14 +
-                (CMCombo.style.opacity == 1 ? 2 + (Math.floor(data.play.combo.max/1000))*2 : 0)
-            }px`;
-
             avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
-            comboCont.style.transform = `translateX(${OD * 11}px)`;
-            ppCont.style.transform = `translateX(${OD * -11}px)`;
-            l50.style.width = `${450 - (22 * OD)}px`;
-            l100.style.width = `${315 - (18 * OD)}px`;
-            l300.style.width = `${180 - (13.5 * OD)}px`;
 
-            if (tempMods.search("HR") !== -1 && data.beatmap.stats.od.converted >= 10) {
-                calculate_od(10);
-                comboCont.style.transform = `translateX(${10 * 11}px)`;
-                ppCont.style.transform = `translateX(${10 * -11}px)`;
-                l50.style.width = `${450 - (22 * 10)}px`;
-                l100.style.width = `${315 - (18 * 10)}px`;
-                l300.style.width = `${180 - (13.5 * 10)}px`;
-            }
-            else if (tempMods.search("EZ") !== -1) {
-                comboCont.style.transform = `translateX(${OD * 5}px)`;
-                ppCont.style.transform = `translateX(${OD * -5}px)`;
-                l50.style.width = `${450 - (11 * OD)}px`;
-                l100.style.width = `${315 - (8.7 * OD)}px`;
-                l300.style.width = `${180 - (6.5 * OD)}px`;
-            }
             for (var c = 0; c < 30; c++) {
                 if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
                     let tick = document.createElement("div");
@@ -622,17 +644,15 @@ socket.onmessage = (event) => {
                     tick.style.transform = `translateX(${tickPos}px)`;
                     document.getElementById("URbar").appendChild(tick);
 
+
                     if(currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300){
-                        tick.style.backgroundColor = '#6fffff';
-                        tick.style.opacity = 0.4;
+                        tick.style.backgroundColor = 'rgba(134, 211, 255, 0.5)';
                     }
                     else if(currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100){
-                        tick.style.backgroundColor = '#74FF66';
-                        tick.style.opacity = 0.4;
+                        tick.style.backgroundColor = 'rgba(136, 255, 134, 0.5)';
                     }
                     else {
-                        tick.style.backgroundColor = '#FFCA98';
-                        tick.style.opacity = 0.4;
+                        tick.style.backgroundColor = 'rgba(255, 213, 134, 0.5)';
                     }
                     function fade() {
                         tick.style.opacity = 0;
@@ -653,15 +673,6 @@ socket.onmessage = (event) => {
     h50.innerHTML = data.play.hits[50];
     h0.innerHTML = data.play.hits[0];
     hsb.innerHTML = data.play.hits.sliderBreaks;
-
-    if (tempPP !== Math.round(data.play.pp.current)) {
-        tempPP = Math.round(data.play.pp.current);
-        pp.innerHTML = tempPP.toString();
-    }
-    if (tempPPfc !== Math.round(data.play.pp.fc)) {
-        tempPPfc = Math.round(data.play.pp.fc);
-        ppFC.innerHTML = tempPPfc.toString();
-    }
 
     starsCurrent.innerHTML = data.beatmap.stats.stars.live;
     animation.starsCurrent.update(starsCurrent.innerHTML);
