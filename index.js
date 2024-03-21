@@ -46,7 +46,7 @@ let Key1Cont = document.getElementById('Key1Cont');
 let Key2Cont = document.getElementById('Key2Cont');
 let Mouse1Cont = document.getElementById('Mouse1Cont');
 let Mouse2Cont = document.getElementById('Mouse2Cont');
-let k1 = new KeyOverlay('k1', 'k1Tiles', { speed: 0.2, keyTextId: "k1Text", keyNameId: "key1"}),
+let k1 = new KeyOverlay('k1', 'k1Tiles', { speed: 0.2, keyTextId: "k1Text", keyNameId: "key1" }),
     k2 = new KeyOverlay('k2', 'k2Tiles', { speed: 0.2, keyTextId: "k2Text", keyNameId: "key2" }),
     m1 = new KeyOverlay('m1', 'm1Tiles', { speed: 0.2, keyTextId: "m1Text", keyNameId: "key3" }),
     m2 = new KeyOverlay('m2', 'm2Tiles', { speed: 0.2, keyTextId: "m2Text", keyNameId: "key4" });
@@ -167,7 +167,7 @@ let animation = {
         suffix: "%",
     }),
     score: new CountUp("score", 0, 0, 0, 0.2, {
-        useEasing: false,
+        useEasing: true,
         useGrouping: true,
         separator: " ",
         decimal: ".",
@@ -214,6 +214,9 @@ for (var t = 0; t < 30; t++) {
 }
 let avatarColor1 = '102, 102, 102',
     avatarColor2 = '185, 185, 185';
+
+let tempScore;
+let tempAcc;
 
 let tempUID;
 let tempCountry;
@@ -271,7 +274,7 @@ let error_h300 = 80;
 let error_h100 = 140;
 let error_h50 = 0;
 
-function calculate_od(temp){
+function calculate_od(temp) {
     error_h300 = 80 - (6 * temp);
     error_h100 = 140 - (8 * temp);
 }
@@ -342,14 +345,14 @@ legacysocket.onmessage = (event) => {
         }
     }
 
-    if(fullTime !== legacysocket.menu.bm.time.mp3) {
-		fullTime = legacysocket.menu.bm.time.mp3;
-		onepart = 1400/fullTime;
-	}
+    if (fullTime !== legacysocket.menu.bm.time.mp3) {
+        fullTime = legacysocket.menu.bm.time.mp3;
+        onepart = 1400 / fullTime;
+    }
 
     if (seek !== legacysocket.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
         seek = legacysocket.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 1.56 +'px';
+        progressChart.style.width = onepart * seek / 1.59 + 'px';
     }
 }
 
@@ -370,13 +373,22 @@ socket.onmessage = (event) => {
         username.innerHTML = tempUsername;
         setupUser(tempUsername);
     }
-    
     if (data.play.score == 0) { }
-    score.innerHTML = data.play.score;
-    animation.score.update(score.innerHTML);
 
-    acc.innerHTML = data.play.accuracy.toFixed(2) + "%";
-    animation.acc.update(acc.innerHTML);
+    if (tempScore !== data.play.score) {
+        tempTotalAvg = 0;
+        tempTotalWeighted = 0;
+        tempAvg = 0;
+        tempScore = data.play.score;
+        score.innerHTML = tempScore;
+        animation.score.update(score.innerHTML);
+    }
+
+    if (tempAcc !== data.play.accuracy) {
+        tempAcc = data.play.accuracy;
+        acc.innerHTML = tempAcc;
+        animation.acc.update(acc.innerHTML);
+    }
 
     onepart = 490 / data.beatmap.time.lastObject;
 
@@ -386,86 +398,80 @@ socket.onmessage = (event) => {
     mapContainer.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
     mapContainer.style.backgroundPosition = "50% 50%";
 
-        if (data.state.number !== 2) {
-            if (data.state.number !== 7) { deRankingPanel(); }
+    if (data.state.number !== 2) {
+        if (data.state.number !== 7) { deRankingPanel(); }
 
-            keys.style.opacity = 0;
+        keys.style.opacity = 0;
 
-            upperPart.style.transform = "translateY(-200px)";
-            smallStats.style.transform = "translateX(-400px)";
-            lowerPart.style.transform = "translateX(-400px)";
+        upperPart.style.transform = "translateY(-200px)";
+        smallStats.style.transform = "translateX(-400px)";
+        lowerPart.style.transform = "translateX(-400px)";
 
-            tickPos = 0;
-            tempAvg = 0;
-
-            URCont.style.transform = "translateY(200px)";
-            avgHitError.style.transform = "translateX(0)";
-
-            bottom.style.transform = "translateY(300px)";
-            URIndex.style.transform = "none";
-
-            document.getElementById("leaderboardx").style.transform = "translateX(-400px)";
-
-            URIndex.innerHTML = "";
-
-            // setTimeout(() => {
-            leaderboard.innerHTML = "";
-            leaderboardFetch = false;
-            leaderboardSet = 0;
-            ourplayerSet = 0;
-            $("#ourplayer").remove();
-            // }, 1000);
-        } else {
-            deRankingPanel();
-            upperPart.style.transform = "none";
-            bottom.style.transform = "none";
-            lowerPart.style.transform = "none";
-            smallStats.style.transform = "none";
-            URCont.style.transform = "none";
-            keys.style.opacity = 1;
-        }
-
-        mapName.innerHTML = data.beatmap.artist + " - " + data.beatmap.title;
-
-        mapInfo.innerHTML = data.beatmap.version;
-
-        stats.innerHTML =
-            "CS: " +
-            data.beatmap.stats.cs.converted +
-            "&emsp;" +
-            "AR: " +
-            data.beatmap.stats.ar.converted +
-            "&emsp;" +
-            "OD: " +
-            data.beatmap.stats.od.converted +
-            "&emsp;" +
-            "HP: " +
-            data.beatmap.stats.hp.converted +
-            "&emsp;" +
-            "Star Rating: " +
-            data.beatmap.stats.stars.total +
-            "*";
-
-        BPM.innerText = data.beatmap.stats.bpm.common;
-
-        tempTotalAvg = 0;
-        tempTotalWeighted = 0;
+        tickPos = 0;
         tempAvg = 0;
 
-        if (tempMods !== data.play.mods.name) {
-            document.getElementById("modContainer").innerHTML = "";
-    
-            tempMods = data.play.mods.name;
-    
-            if (tempMods.search("HD") !== -1) 
-                isHidden = true;
-            else if (tempMods.search("FL") !== -1)
-                isHidden = true;
-            else
-                isHidden = false;
-    
+        URCont.style.transform = "translateY(200px)";
+        avgHitError.style.transform = "translateX(0)";
+
+        bottom.style.transform = "translateY(300px)";
+        URIndex.style.transform = "none";
+
+        document.getElementById("leaderboardx").style.transform = "translateX(-400px)";
+
+        URIndex.innerHTML = "";
+
+        // setTimeout(() => {
+        leaderboard.innerHTML = "";
+        leaderboardFetch = false;
+        leaderboardSet = 0;
+        ourplayerSet = 0;
+        $("#ourplayer").remove();
+        // }, 1000);
+    } else {
+        deRankingPanel();
+        upperPart.style.transform = "none";
+        bottom.style.transform = "none";
+        lowerPart.style.transform = "none";
+        smallStats.style.transform = "none";
+        URCont.style.transform = "none";
+        keys.style.opacity = 1;
+    }
+
+    mapName.innerHTML = data.beatmap.artist + " - " + data.beatmap.title;
+
+    mapInfo.innerHTML = data.beatmap.version;
+
+    stats.innerHTML =
+        "CS: " +
+        data.beatmap.stats.cs.converted +
+        "&emsp;" +
+        "AR: " +
+        data.beatmap.stats.ar.converted +
+        "&emsp;" +
+        "OD: " +
+        data.beatmap.stats.od.converted +
+        "&emsp;" +
+        "HP: " +
+        data.beatmap.stats.hp.converted +
+        "&emsp;" +
+        "Star Rating: " +
+        data.beatmap.stats.stars.total +
+        "*";
+
+    if (tempMods !== data.play.mods.name) {
+        document.getElementById("modContainer").innerHTML = "";
+
+        tempMods = data.play.mods.name;
+
+        if (tempMods.search("HD") !== -1)
+            isHidden = true;
+        else if (tempMods.search("FL") !== -1)
+            isHidden = true;
+        else
+            isHidden = false;
+
         let modsCount = tempMods.length;
-    
+
         for (var i = 0; i < modsCount; i++) {
             if (tempMods.substr(i, 2) !== "NM" || tempMods.substr(i, 2) !== "TD") {
                 let mods = document.createElement("div");
@@ -477,7 +483,7 @@ socket.onmessage = (event) => {
             }
             i++;
         }
-    
+
         if (OD !== data.beatmap.stats.od.converted) {
             if (data.play.mods.name.indexOf("DT") == -1 || data.play.mods.name.indexOf("NC") == -1) {
                 OD = data.beatmap.stats.od.converted;
@@ -542,10 +548,10 @@ socket.onmessage = (event) => {
         combo_x.style.display = "inline";
     }
 
-    if (data.play.combo.current < 10) { 
+    if (data.play.combo.current < 10) {
         comboCont.style.width = `${35 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
     }
-    if (data.play.combo.current >= 10 && data.play.combo.current < 100) { 
+    if (data.play.combo.current >= 10 && data.play.combo.current < 100) {
         comboCont.style.width = `${50 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
     }
     if (data.play.combo.current >= 100 && data.play.combo.current < 1000) {
@@ -560,7 +566,7 @@ socket.onmessage = (event) => {
 
     function getMaxPxValue(x) {
         if (x < 10) return 35;
-        if (x >= 10 && x < 100) return 50;
+        if (x >= 10 && x < 100) return 60;
         if (x >= 100 && x < 1000) return 73;
         if (x >= 1000 && x < 10000) return 90;
     }
@@ -584,17 +590,54 @@ socket.onmessage = (event) => {
     if (data.beatmap.time.live >= data.beatmap.time.firstObject) {
         ppFC.style.opacity = 1;
         ppFC.style.width = "auto";
-        tempWidth = tempPP + " / " + tempPPfc + "pp";
+        pp_text = tempPP + " / " + tempPPfc + "pp";
     }
     else {
-        tempWidth = tempPP + " / pp";
+        pp_text = tempPP + " / pp";
         ppFC.style.opacity = 0;
         ppFC.style.width = "0px";
     }
 
-    ppCont.style.width = `${
-    (tempWidth.length + (Math.floor(tempPP/1000)))*13 +
-    (ppFC.style.opacity == 1 ? 11 + (Math.floor(tempPPfc/1000))*11 : 0)}px`;
+    if (data.play.pp.current < 10) {
+        pp.style.width = "15px";
+    }
+    if (data.play.pp.current >= 10 && data.play.pp.current < 100) {
+        pp.style.width = "30px";
+    }
+    if (data.play.pp.current >= 100 && data.play.pp.current < 1000) {
+        pp.style.width = "45px";
+    }
+    if (data.play.pp.current >= 1000 && data.play.pp.current < 10000) {
+        pp.style.width = "70px";
+    }
+    if (data.play.pp.current >= 10000 && data.play.pp.current < 1000) {
+        pp.style.width = "85px";
+    }
+
+    if (pp_text.length == 6) { 
+        ppCont.style.width = '75px';
+    }
+    if (pp_text.length == 7) { 
+        ppCont.style.width = '93px';
+    }
+    if (pp_text.length == 8) { 
+        ppCont.style.width = '107px';
+    }
+    if (pp_text.length == 9) {
+        ppCont.style.width = '125px';
+    }
+    if (pp_text.length == 10) {
+        ppCont.style.width = '140px';
+    }
+    if (pp_text.length == 11) {
+        ppCont.style.width = '158px';
+    }
+    if (pp_text.length == 12) {
+        ppCont.style.width = '170px';
+    }
+    if (pp_text.length == 13) {
+        ppCont.style.width = '183px';
+    }
 
     if (data.state.number == 2) {
         calculate_od(data.beatmap.stats.od.original);
@@ -645,10 +688,10 @@ socket.onmessage = (event) => {
                     document.getElementById("URbar").appendChild(tick);
 
 
-                    if(currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300){
+                    if (currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300) {
                         tick.style.backgroundColor = 'rgba(134, 211, 255, 0.5)';
                     }
-                    else if(currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100){
+                    else if (currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100) {
                         tick.style.backgroundColor = 'rgba(136, 255, 134, 0.5)';
                     }
                     else {
@@ -657,7 +700,7 @@ socket.onmessage = (event) => {
                     function fade() {
                         tick.style.opacity = 0;
                     }
-        
+
                     function remove() {
                         document.getElementById("URbar").removeChild(tick);
                     }
@@ -677,11 +720,49 @@ socket.onmessage = (event) => {
     starsCurrent.innerHTML = data.beatmap.stats.stars.live;
     animation.starsCurrent.update(starsCurrent.innerHTML);
 
+    let cache_beatmap = '';
+    
+    if (cache_beatmap !== data.beatmap.checksum) {
+        cache_beatmap == data.beatmap.checksum;
+
+        MapReader(
+            `http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.beatmap}`,
+            data.beatmap.time.live
+        );
+        async function MapReader(path, currentTime) {
+            const reader = await fetch(path, { cache: "no-store" });
+            const text = await reader.text();
+            const matchTimingPoints = text
+                .match(/\[TimingPoints\](\r?)\n(-?[0-9]+,-?[0-9]+(\.[0-9]+)?,[0-9]+,[0-9]+,[0-9]+,[0-9]+,(0|1),[0-9]+(\r)?\n)*/gm)
+                .shift();
+
+            const timingPointsList = matchTimingPoints.match(/(-?[0-9]+,-?[0-9]+(\.[0-9]+)?,[0-9]+,[0-9]+,[0-9]+,[0-9]+,1,[0-9]+)/g).map((point) => {
+                const params = point.split(",");
+                return {
+                    time: parseInt(params[0]),
+                    BPM: 60000 / parseFloat(params[1]),
+                };
+            });
+
+            if (tempMods.search("DT") !== -1 || tempMods.search("NC") !== -1) {
+                BPM.innerText = timingPointsList.findLast((point) => point.time <= currentTime)?.BPM * 1.5 ?? 0.0;
+            }
+            else if (tempMods.search("HT") !== -1) {
+                BPM.innerText = timingPointsList.findLast((point) => point.time <= currentTime)?.BPM * 0.75 ?? 0.0;
+            }
+            else {
+                BPM.innerText = timingPointsList.findLast((point) => point.time <= currentTime)?.BPM ?? 0.0;
+            }
+
+        }
+
+    };
+
     if (data.beatmap.time.live > data.beatmap.time.live) {
-         leaderboard.innerHTML = '';
-         $("#ourplayer").remove();
-         ourplayerSet = 0;
-         leaderboardSet = 0;
+        leaderboard.innerHTML = '';
+        $("#ourplayer").remove();
+        ourplayerSet = 0;
+        leaderboardSet = 0;
     }
 
     if (data.beatmap.time.live >= data.beatmap.time.firstObject + 5000 && data.beatmap.time.live <= data.beatmap.time.firstObject + 11900 && data.state.number == 2) {
@@ -694,9 +775,9 @@ socket.onmessage = (event) => {
 
     if (data.beatmap.time.live >= data.beatmap.time.lastObject - 10000 && data.state.number === 2 && !apiGetSet) fetchData();
 
-    if (data.beatmap.time.live >= data.beatmap.time.lastObject + 800 && data.state.number === 2) { rankingPanelBG.style.opacity = 1; keys.style.opacity = 0; }
+    if (data.beatmap.time.live >= data.beatmap.time.lastObject + 500 && data.state.number === 2) { rankingPanelBG.style.opacity = 1; keys.style.opacity = 0; }
 
-    if (rankingPanelBG.style.opacity !== 1 && data.state.number === 2 && data.beatmap.time.live >= data.beatmap.time.lastObject + 1200 || data.state.number === 7) {
+    if (rankingPanelBG.style.opacity !== 1 && data.state.number === 2 && data.beatmap.time.live >= data.beatmap.time.lastObject + 1000 || data.state.number === 7) {
         if (!rankingPanelSet) setupRankingPanel();
         if (data.resultsScreen.rank !== "")
             if (!isHidden) rankingResult.style.backgroundImage = `url('./static/rankings/${data.resultsScreen.rank}.png')`;
@@ -715,95 +796,94 @@ socket.onmessage = (event) => {
             tempSlotLength = tempMapScores.length;
         }
 
-            document.getElementById("leaderboardx").style.transform = "none";
+        document.getElementById("leaderboardx").style.transform = "none";
 
-            setTimeout(() => {
-                if (!ourplayerSet && leaderboardEnable === "1") {
-                    ourplayerSet = 1;
-                    ourplayerContainer = document.createElement("div");
-                    ourplayerContainer.id = "ourplayer";
-                    ourplayerContainer.setAttribute("class", "ourplayerContainer");
+        setTimeout(() => {
+            if (!ourplayerSet && leaderboardEnable === "1") {
+                ourplayerSet = 1;
+                ourplayerContainer = document.createElement("div");
+                ourplayerContainer.id = "ourplayer";
+                ourplayerContainer.setAttribute("class", "ourplayerContainer");
 
-                    minimodsContainerOP = document.createElement("div");
-                    minimodsContainerOP.id = `minimodsContainerOurPlayer`;
-                    minimodsContainerOP.setAttribute("class", "minimodsContainer");
+                minimodsContainerOP = document.createElement("div");
+                minimodsContainerOP.id = `minimodsContainerOurPlayer`;
+                minimodsContainerOP.setAttribute("class", "minimodsContainer");
 
-                    document.getElementById("leaderboardx").appendChild(ourplayerContainer);
-                    document.getElementById("ourplayer").appendChild(minimodsContainerOP);
+                document.getElementById("leaderboardx").appendChild(ourplayerContainer);
+                document.getElementById("ourplayer").appendChild(minimodsContainerOP);
 
-                    tempMinimodsOP = tempMods;
+                tempMinimodsOP = tempMods;
 
-                    minimodsCountOP = tempMinimodsOP.length;
+                minimodsCountOP = tempMinimodsOP.length;
 
-                    for (var k = 0; k < minimodsCountOP; k++) {
-                        let mods = document.createElement("div");
-                        mods.id = tempMinimodsOP.substr(k, 2) + "OurPlayer";
-                        mods.setAttribute("class", "minimods");
-                        mods.style.backgroundImage = `url('./static/minimods/${tempMinimodsOP.substr(k, 2)}.png')`;
-                        mods.style.transform = `translateX(${(k / 2) * 10}px)`;
-                        document.getElementById(`minimodsContainerOurPlayer`).appendChild(mods);
-                        k++;
-                    }
+                for (var k = 0; k < minimodsCountOP; k++) {
+                    let mods = document.createElement("div");
+                    mods.id = tempMinimodsOP.substr(k, 2) + "OurPlayer";
+                    mods.setAttribute("class", "minimods");
+                    mods.style.backgroundImage = `url('./static/minimods/${tempMinimodsOP.substr(k, 2)}.png')`;
+                    mods.style.transform = `translateX(${(k / 2) * 10}px)`;
+                    document.getElementById(`minimodsContainerOurPlayer`).appendChild(mods);
+                    k++;
                 }
+            }
 
-                if (!tempUID) tempUID = "8266808";
+            if (!tempUID) tempUID = "8266808";
 
-                ourplayerContainer.innerHTML = `
+            ourplayerContainer.innerHTML = `
                     <div id="ourplayerAva" style="background-image: url('https://a.ppy.sh/${tempUID}')" class="leaderboardAvatar"></div>
                     <div class="playerStatsContainer">
                     <div id="ourplayerName" style="width: 180px;">${data.play.playerName}</div>
                     ${grader(
-                        data.play.hits["300"],
-                        data.play.hits["100"],
-                        data.play.hits["50"],
-                        data.play.hits["0"],
-                        tempMods.search("HD")
-                    )}
+                data.play.hits["300"],
+                data.play.hits["100"],
+                data.play.hits["50"],
+                data.play.hits["0"],
+                tempMods.search("HD")
+            )}
                     <div id="ourplayerScore" style="font-size: 15px; font-family: Torus; width: 100px;">${new Intl.NumberFormat().format(
-                        Number(data.play.score)
-                    )}</div>
+                Number(data.play.score)
+            )}</div>
                     <div id="ourplayerCombo" style="font-size: 15px; font-family: Torus; width: 50px;">${data.play.combo.max}x</div>
                     <div id="ourplayerAcc" style="font-size: 15px; font-family: Torus; width: 60px;">${data.play.accuracy.toFixed(2)}%</div>
                     ${$("#" + minimodsContainerOP.id).prop("outerHTML")}
                     </div>
                 `;
-            }, 1000);
+        }, 1000);
 
-            if (document.getElementById("ourplayer"))
-                if (playerPosition > 5) {
-                    leaderboard.style.transform = `translateY(${-(playerPosition - 6) * 75}px)`;
-                    document.getElementById("ourplayer").style.transform = `none`;
-                } else {
-                    leaderboard.style.transform = "translateY(0)";
-                    document.getElementById("ourplayer").style.transform = `translateY(-${(6 - playerPosition) * 75}px)`;
-                }
-
-            if (tempSlotLength > 0)
-                for (var i = 1; i <= tempSlotLength; i++) {
-                    if (i >= playerPosition && playerPosition !== 0 && document.getElementById(`slot${i}`)) {
-                        document.getElementById(`slot${i}`).style.transform = `translateY(75px)`;
-                    }
-                }
-
-            if (data.settings.interfaceVisible == true && data.state.number == 2) {
-                upperPart.style.transform = "translateY(-200px)";
+        if (document.getElementById("ourplayer"))
+            if (playerPosition > 5) {
+                leaderboard.style.transform = `translateY(${-(playerPosition - 6) * 75}px)`;
+                document.getElementById("ourplayer").style.transform = `none`;
             } else {
-                smallStats.style.transform = "none";
-                upperPart.style.transform = "none";
-                lowerPart.style.transform = "none";
-                bottom.style.transform = "none";
-                URIndex.style.transform = "none";
-                URText.style.transform = "none";
-                URCont.style.transform = "none";
+                leaderboard.style.transform = "translateY(0)";
+                document.getElementById("ourplayer").style.transform = `translateY(-${(6 - playerPosition) * 75}px)`;
             }
+
+        if (tempSlotLength > 0)
+            for (var i = 1; i <= tempSlotLength; i++) {
+                if (i >= playerPosition && playerPosition !== 0 && document.getElementById(`slot${i}`)) {
+                    document.getElementById(`slot${i}`).style.transform = `translateY(75px)`;
+                }
+            }
+
+        if (data.settings.interfaceVisible == true && data.state.number == 2) {
+            upperPart.style.transform = "translateY(-200px)";
+        } else {
+            smallStats.style.transform = "none";
+            upperPart.style.transform = "none";
+            lowerPart.style.transform = "none";
+            bottom.style.transform = "none";
+            URIndex.style.transform = "none";
+            URText.style.transform = "none";
+            URCont.style.transform = "none";
         }
+    }
 
     if (tempMapScores.length > 0) if (data.play.score >= tempMapScores[playerPosition - 2]) playerPosition--;
 
     if (data.play.healthBar.smooth > 0) {
-        hp.style.clipPath = `polygon(${(1 - data.play.healthBar.smooth / 200) * 40 + 6.3}% 0%, ${(data.play.healthBar.smooth / 200) * 40 + 53.7}% 0%, ${
-            (data.play.healthBar.smooth / 200) * 40 + 53.7
-        }% 100%, ${(1 - data.play.healthBar.smooth / 200) * 40 + 6.3}% 100%)`;
+        hp.style.clipPath = `polygon(${(1 - data.play.healthBar.smooth / 200) * 40 + 6.3}% 0%, ${(data.play.healthBar.smooth / 200) * 40 + 53.7}% 0%, ${(data.play.healthBar.smooth / 200) * 40 + 53.7
+            }% 100%, ${(1 - data.play.healthBar.smooth / 200) * 40 + 6.3}% 100%)`;
     } else {
         hp.style.clipPath = `polygon(6.3% 0, 93.7% 0, 93.7% 100%, 6.3% 100%)`;
     }
@@ -919,9 +999,9 @@ async function setupUser(name) {
         .split("")
         .map((char) => 127397 + char.charCodeAt())[0]
         .toString(16)}-${data.country
-        .split("")
-        .map((char) => 127397 + char.charCodeAt())[1]
-        .toString(16)}`;
+            .split("")
+            .map((char) => 127397 + char.charCodeAt())[1]
+            .toString(16)}`;
     tempRanks = data.pp_rank;
     tempcountryRank = data.pp_country_rank;
     tempPlayerPP = data.pp_raw;
@@ -955,15 +1035,13 @@ async function setupUser(name) {
 
         config.data.datasets[0].backgroundColor = `rgb(${avatarColor1}, 0.2)`;
         configSecond.data.datasets[0].backgroundColor = `rgb(${avatarColor1}, 0.7)`;
-        
+
         comboCont.style.backgroundColor = `rgb(${avatarColor1})`;
         comboCont.style.boxShadow = `0 0 5px 2px rgb(${avatarColor1})`;
-        ppCont.style.backgroundColor = `rgb(${avatarColor2})`; 
+        ppCont.style.backgroundColor = `rgb(${avatarColor2})`;
         ppCont.style.boxShadow = `0 0 5px 2px rgb(${avatarColor2})`;
 
     }
-    else avatarColor1 = '102, 102, 102', separator
-         avatarColor2 = '185, 185, 185';
 }
 
 async function fetchWebBancho(md5, beatmapId) {
@@ -1111,21 +1189,18 @@ async function setupMapScores(beatmapID, name, countryToggle) {
             playerContainer.setAttribute("class", "playerContainer");
             playerContainer.style.top = `${(i - 1) * 75}px`;
 
-            let playerAvatarLB = `<div id="lb_ava${i}" style="background-image: url('https://a.ppy.sh/${
-                data[i - 1].user_id
-            }')" class="leaderboardAvatar"></div>`;
+            let playerAvatarLB = `<div id="lb_ava${i}" style="background-image: url('https://a.ppy.sh/${data[i - 1].user_id
+                }')" class="leaderboardAvatar"></div>`;
 
-            let playerNameLB = `<div id="lb_name${i}" style="width: 180px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${
-                data[i - 1].username
-            }</div>`;
+            let playerNameLB = `<div id="lb_name${i}" style="width: 180px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${data[i - 1].username
+                }</div>`;
 
             let playerScoreLB = `<div id="lb_score${i}" style="font-size: 15px; font-family: Torus; width: 100px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${new Intl.NumberFormat().format(
                 Number(data[i - 1].score)
             )}</div>`;
 
-            let playerComboLB = `<div id="lb_combo${i}" style="font-size: 15px; font-family: Torus; width: 50px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${
-                data[i - 1].maxcombo
-            }x</div>`;
+            let playerComboLB = `<div id="lb_combo${i}" style="font-size: 15px; font-family: Torus; width: 50px; color: #ffffff; filter: drop-shadow(0 0 5px rgba(0, 0, 0 ,0))">${data[i - 1].maxcombo
+                }x</div>`;
 
             let raw_playerAcc = accuracyCalc(
                 parseInt(data[i - 1].count300),
@@ -1253,12 +1328,12 @@ async function postDNTT(beatmap_id) {
 }
 
 async function postUserID(id) {
-   try {
-       let rawData = null;
-       const data = await axios.get(`https://phubahosi.vercel.app/api/color/${id}`).then((response) => {
+    try {
+        let rawData = null;
+        const data = await axios.get(`https://phubahosi.vercel.app/api/color/${id}`).then((response) => {
             rawData = response.data
-       });
-       return rawData;
+        });
+        return rawData;
     } catch (error) {
         console.error(error);
     }

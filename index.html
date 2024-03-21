@@ -53,10 +53,10 @@
 			<div id="smallStats">
 				<div id="strainGraph">
 					<div id="basegraph">
-						<canvas id="canvas" width="310" height="120"></canvas>
+						<canvas id="canvas" width="310" height="160"></canvas>
 					</div>
 					<div id="progress">
-						<canvas id="canvasSecond" width="310" height="120"></canvas>
+						<canvas id="canvasSecond" width="310" height="160"></canvas>
 					</div>
 				</div>
 				<div id="stars1">
@@ -64,7 +64,7 @@
 					<span id="starsCurrent" class="odometer"></span>
 			    </div>
 				<div id="bpmd">
-					<span id="BPM"></span><span>bpm</span>
+					<span id="BPM" class="odometer"></span><span id="bpmtext">bpm</span>
 				</div>
 				<div id="sModsCont">
 					<div id="sMods"></div>
@@ -82,7 +82,7 @@
 					</div>
 					<div id="ppCont">
 						<span class="pp_text" id="pp_textbox">
-							<span class="odometer" id="pp"></span>
+							<span class="odometer" id="pp" style="transition-duration: 300ms;"></span>
 							<span class="statictext"> / </span>
 							<span class="odometer" id="ppFC"></span>
 							<span class="statictext" style="right: 5px;">pp</span>
@@ -271,7 +271,7 @@
 					<div id="qc3" class="qcContainer"></div>
 				</div>
 			</div>
-			<div id="resultRecorder">HosizoraN Concept Overlay</div>
+			<div id="resultRecorder"></div>
 			<div id="modContainer"></div>
 			</div>
 		</div>
@@ -279,7 +279,7 @@
 			<defs>
 			  <clipPath id="myClip">
 				<polygon points="1636,1040 1920,1040 1920,1080 1636,1080"/>
-				<polygon points="1865,430 1920,430 1920,780 1865,780"/>
+				<polygon points="1865,465 1920,465 1920,720 1865,720"/>
 			  </clipPath>
 			</defs>
 		  </svg>
@@ -289,6 +289,13 @@
 				od = new Odometer({
 					el: el,
 					format: '(dd).dd',
+				});
+			}
+			{
+				let el = document.getElementById('ppFC');
+				od = new Odometer({
+					el: el,
+					format: 'dddd',
 				});
 			}
 		</script>

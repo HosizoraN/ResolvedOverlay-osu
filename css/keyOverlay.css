@@ -16,7 +16,7 @@
     position: absolute;
     top: 42.5%;
     right: 10px;
-    --fadeIn: linear-gradient(to left, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0) 100%);
+    --fadeIn: linear-gradient(to left, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 100%);
     transition: ease-in-out 200ms;
 }
 .keyContainer {
@@ -54,7 +54,7 @@
     max-width: 100%;
     right: 35px;
     border-radius: 5px;
-    opacity: 50%;
+    opacity: 75%;
 }
 
 .absolute {
@@ -82,11 +82,11 @@
 .keyName {
     position: absolute;
     font-size: 20px;
-    min-width: 50px;
+    width: 50px;
     height: 100%;
     top: 10px;
-    text-align: right;
-    right: 0;
+    text-align: left;
+    right: -25px;
     color: rgb(190, 190, 190);
     text-transform: uppercase;
     transition: ease-out 300ms;

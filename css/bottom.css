@@ -109,7 +109,7 @@
 	padding: 3px 15px 3px 15px;
 	bottom: 10px;
 	height: 45px;
-	transition: width 300ms ease-out;
+	transition: width 300ms ease-in-out;
 	transition: ease-in-out 500ms;
 	z-index: 0;
 	white-space: nowrap;
@@ -125,7 +125,7 @@
 	padding: 3px 15px 3px 15px;
 	bottom: 10px;
 	height: 45px;
-	transition: width 300ms ease-out;
+	transition: width 300ms ease-in-out;
 	transition: ease-in-out 500ms;
 	z-index: 0;
 	white-space: nowrap;
