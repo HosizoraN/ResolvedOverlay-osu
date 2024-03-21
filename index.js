@@ -345,14 +345,14 @@ legacysocket.onmessage = (event) => {
         }
     }
 
-    if (fullTime !== legacysocket.menu.bm.time.mp3) {
-        fullTime = legacysocket.menu.bm.time.mp3;
+    if (fullTime !== legacysocket.menu.bm.time.full) {
+        fullTime = legacysocket.menu.bm.time.full;
         onepart = 1400 / fullTime;
     }
 
     if (seek !== legacysocket.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
         seek = legacysocket.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 1.59 + 'px';
+        progressChart.style.width = onepart * seek / 1.78 + 'px';
     }
 }
 
