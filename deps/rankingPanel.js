@@ -131,8 +131,18 @@ async function setupRankingPanel() {
     rsb.innerHTML = data.play.hits.sliderBreaks;
     sBPM.innerHTML = `${data.beatmap.stats.bpm.common} BPM`;
     ppResult.innerHTML = data.play.pp.current.toFixed(0) + 'pp';
+    ppFCresult.innerHTML = data.play.pp.fc.toFixed(0) + 'pp if FC';
 
     resultRecorder.style.transform = 'none';
+
+    if (data.resultsScreen.hits[0] > 0 || data.play.hits.sliderBreaks > 0) {
+        ppFCresult.style.opacity = 1
+        ppFCresult.style.height = '30px'
+    }
+    else {
+        ppFCresult.style.opacity = 0
+        ppFCresult.style.height = '0px'
+    }
 }
 
 async function deRankingPanel() {

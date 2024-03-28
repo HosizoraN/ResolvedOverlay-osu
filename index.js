@@ -274,6 +274,8 @@ let error_h300 = 80;
 let error_h100 = 140;
 let error_h50 = 0;
 
+let cache_beatmap = '';
+
 function calculate_od(temp) {
     error_h300 = 80 - (6 * temp);
     error_h100 = 140 - (8 * temp);
@@ -288,9 +290,9 @@ window.onload = function () {
 };
 
 keypress.onmessage = (event) => {
-    let keypress = JSON.parse(event.data);
+    let data = JSON.parse(event.data);
 
-    if (keypress.keys.k1.count > 0) {
+    if (data.keys.k1.count > 0) {
         Key1Cont.style.opacity = 1
         Key1Cont.style.transform = 'translateY(0)';
     }
@@ -298,7 +300,7 @@ keypress.onmessage = (event) => {
         Key1Cont.style.opacity = 0
         Key1Cont.style.transform = 'translateY(-10px)';
     }
-    if (keypress.keys.k2.count > 0) {
+    if (data.keys.k2.count > 0) {
         Key2Cont.style.opacity = 1
         Key2Cont.style.transform = 'translateY(0)';
     }
@@ -306,7 +308,7 @@ keypress.onmessage = (event) => {
         Key2Cont.style.opacity = 0
         Key2Cont.style.transform = 'translateY(-10px)';
     }
-    if (keypress.keys.m1.count > 0) {
+    if (data.keys.m1.count > 0) {
         Mouse1Cont.style.opacity = 1
         Mouse1Cont.style.transform = 'translateY(0)';
     }
@@ -314,7 +316,7 @@ keypress.onmessage = (event) => {
         Mouse1Cont.style.opacity = 0
         Mouse1Cont.style.transform = 'translateY(-10px)';
     }
-    if (keypress.keys.m2.count > 0) {
+    if (data.keys.m2.count > 0) {
         Mouse2Cont.style.opacity = 1
         Mouse2Cont.style.transform = 'translateY(0)';
     }
@@ -323,18 +325,63 @@ keypress.onmessage = (event) => {
         Mouse2Cont.style.transform = 'translateY(-10px)';
     }
 
-    k1.update(keypress.keys.k1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
-    k2.update(keypress.keys.k2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
-    m1.update(keypress.keys.m1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
-    m2.update(keypress.keys.m2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    k1.update(data.keys.k1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    k2.update(data.keys.k2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    m1.update(data.keys.m1, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+    m2.update(data.keys.m2, `rgb(${avatarColor1})`, `rgb(${KeyTapColor})`)
+
+    if (data.hitErrors !== null) {
+        tempSmooth = smooth(data.hitErrors, 4);
+        if (tempHitErrorArrayLength !== tempSmooth.length) {
+            tempHitErrorArrayLength = tempSmooth.length;
+            for (var a = 0; a < tempHitErrorArrayLength; a++) {
+                tempAvg = tempAvg * 0.9 + tempSmooth[a] * 0.1;
+            }
+            fullPos = (-11 * OD + 225);
+            tickPos = data.hitErrors[tempHitErrorArrayLength - 1] / 450 * 510;
+            currentErrorValue = data.hitErrors[tempHitErrorArrayLength - 1];
+            avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
+
+            for (var c = 0; c < 30; c++) {
+                if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
+                    let tick = document.createElement("div");
+                    tick.id = `tick${tempHitErrorArrayLength}`;
+                    tick.setAttribute("class", "tick");
+                    tick.style.opacity = 1;
+                    tick.style.transform = `translateX(${tickPos}px)`;
+                    document.getElementById("URbar").appendChild(tick);
+
+
+                    if (currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300) {
+                        tick.style.backgroundColor = 'rgba(134, 211, 255, 0.5)';
+                    }
+                    else if (currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100) {
+                        tick.style.backgroundColor = 'rgba(136, 255, 134, 0.5)';
+                    }
+                    else {
+                        tick.style.backgroundColor = 'rgba(255, 213, 134, 0.5)';
+                    }
+                    function fade() {
+                        tick.style.opacity = 0;
+                    }
+
+                    function remove() {
+                        document.getElementById("URbar").removeChild(tick);
+                    }
+                    setTimeout(fade, 500);
+                    setTimeout(remove, 3500);
+                }
+            }
+        }
+    }
 }
 
 legacysocket.onmessage = (event) => {
-    let legacysocket = JSON.parse(event.data);
+    let data = JSON.parse(event.data);
 
-    if (tempStrainBase !== JSON.stringify(legacysocket.menu.pp.strains)) {
-        tempLink = JSON.stringify(legacysocket.menu.pp.strains);
-        if (legacysocket.menu.pp.strains) smoothed = smooth(legacysocket.menu.pp.strains, smoothOffset);
+    if (tempStrainBase !== JSON.stringify(data.menu.pp.strains)) {
+        tempLink = JSON.stringify(data.menu.pp.strains);
+        if (data.menu.pp.strains) smoothed = smooth(data.menu.pp.strains, smoothOffset);
         config.data.datasets[0].data = smoothed;
         config.data.labels = smoothed;
         configSecond.data.datasets[0].data = smoothed;
@@ -345,15 +392,6 @@ legacysocket.onmessage = (event) => {
         }
     }
 
-    if (fullTime !== legacysocket.menu.bm.time.full) {
-        fullTime = legacysocket.menu.bm.time.full;
-        onepart = 1400 / fullTime;
-    }
-
-    if (seek !== legacysocket.menu.bm.time.current && fullTime !== undefined && fullTime !== 0) {
-        seek = legacysocket.menu.bm.time.current;
-        progressChart.style.width = onepart * seek / 1.78 + 'px';
-    }
 }
 
 socket.onmessage = (event) => {
@@ -388,9 +426,8 @@ socket.onmessage = (event) => {
         tempAcc = data.play.accuracy;
         acc.innerHTML = tempAcc;
         animation.acc.update(acc.innerHTML);
+        accIffc(data.play.accuracy.toFixed(2), data.play.mods.number)
     }
-
-    onepart = 490 / data.beatmap.time.lastObject;
 
     data.folders.beatmap = data.folders.beatmap.replace(/#/g, "%23").replace(/%/g, "%25").replace(/\\/g, "/").replace(/'/g, "%27").replace(/ /g, "%20")
     mapBG.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('http://127.0.0.1:24050/files/beatmap/${data.folders.beatmap}/${data.files.background}')`;
@@ -435,6 +472,19 @@ socket.onmessage = (event) => {
         smallStats.style.transform = "none";
         URCont.style.transform = "none";
         keys.style.opacity = 1;
+    }
+
+    if (fullTime !== data.beatmap.time.mp3Length) {
+        fullTime = data.beatmap.time.mp3Length;
+        onepart = 490 / fullTime;
+    }
+	if(fullTime !== data.beatmap.time.mp3Length){
+		fullTime = data.beatmap.time.mp3Length;
+		onepart = 1400/fullTime;
+	}
+    if (seek !== data.beatmap.time.live && fullTime !== undefined && fullTime !== 0) {
+        seek = data.beatmap.time.live;
+        progressChart.style.width = onepart * seek / 1.57 +'px';
     }
 
     mapName.innerHTML = data.beatmap.artist + " - " + data.beatmap.title;
@@ -563,39 +613,24 @@ socket.onmessage = (event) => {
     if (data.play.combo.current >= 10000 && data.play.combo.current < 1000) {
         comboCont.style.width = `${100 + (isBreak ? getMaxPxValue(data.play.combo.max) : 0)}px`;
     }
+    
+    let isStarted = data.beatmap.time.live >= data.beatmap.time.firstObject
 
-    function getMaxPxValue(x) {
-        if (x < 10) return 35;
-        if (x >= 10 && x < 100) return 60;
-        if (x >= 100 && x < 1000) return 73;
-        if (x >= 1000 && x < 10000) return 90;
-    }
-
-    //   function getTranslateValue(x) {
-    //     if (x < 10) return 150;
-    //     if (x >= 10 && x < 100) return 150;
-    //     if (x >= 100 && x < 1000) return 150;
-    //     if (x >= 1000 && x < 10000) return 150;
-    //   }
-
-    if (tempPP !== Math.round(data.play.pp.current)) {
-        tempPP = Math.round(data.play.pp.current);
-        pp.innerHTML = tempPP.toString();
-    }
-    if (tempPPfc !== Math.round(data.play.pp.fc)) {
-        tempPPfc = Math.round(data.play.pp.fc);
-        ppFC.innerHTML = tempPPfc.toString();
-    }
-
-    if (data.beatmap.time.live >= data.beatmap.time.firstObject) {
-        ppFC.style.opacity = 1;
-        ppFC.style.width = "auto";
+    if (isStarted) {
         pp_text = tempPP + " / " + tempPPfc + "pp";
+        ppFC.style.opacity = 1;
+        ppFC.style.width = 'auto';
     }
     else {
         pp_text = tempPP + " / pp";
         ppFC.style.opacity = 0;
-        ppFC.style.width = "0px";
+        ppFC.style.width = '0px';
+    }
+
+    if (tempPP !== data.play.pp.current.toFixed(0)) {
+        tempPP = data.play.pp.current.toFixed(0);
+        pp.innerHTML = tempPP;
+        ppFC.innerHTML = tempPPfc;
     }
 
     if (data.play.pp.current < 10) {
@@ -639,7 +674,22 @@ socket.onmessage = (event) => {
         ppCont.style.width = '183px';
     }
 
+    function getMaxPxValue(x) {
+        if (x < 10) return 35;
+        if (x >= 10 && x < 100) return 60;
+        if (x >= 100 && x < 1000) return 73;
+        if (x >= 1000 && x < 10000) return 90;
+    }
+
+    //   function getTranslateValue(x) {
+    //     if (x < 10) return 150;
+    //     if (x >= 10 && x < 100) return 150;
+    //     if (x >= 100 && x < 1000) return 150;
+    //     if (x >= 1000 && x < 10000) return 150;
+    //   }
+
     if (data.state.number == 2) {
+        OD = data.beatmap.stats.od.original;
         calculate_od(data.beatmap.stats.od.original);
         if (tempMods.search("HR") !== -1 && data.beatmap.stats.od.converted >= 10) {
             calculate_od(10);
@@ -665,52 +715,6 @@ socket.onmessage = (event) => {
         }
     }
 
-    if (data.play.hitErrorArray !== null) {
-        tempSmooth = smooth(data.play.hitErrorArray, 4);
-        OD = data.beatmap.stats.od.original;
-        if (tempHitErrorArrayLength !== tempSmooth.length) {
-            tempHitErrorArrayLength = tempSmooth.length;
-            for (var a = 0; a < tempHitErrorArrayLength; a++) {
-                tempAvg = tempAvg * 0.9 + tempSmooth[a] * 0.1;
-            }
-            fullPos = (-11 * OD + 225);
-            tickPos = data.play.hitErrorArray[tempHitErrorArrayLength - 1] / 450 * 510;
-            currentErrorValue = data.play.hitErrorArray[tempHitErrorArrayLength - 1];
-            avgHitError.style.transform = `translateX(${(tempAvg / 450) * 450}px)`;
-
-            for (var c = 0; c < 30; c++) {
-                if ((tempHitErrorArrayLength % 30) == ((c + 1) % 30)) {
-                    let tick = document.createElement("div");
-                    tick.id = `tick${tempHitErrorArrayLength}`;
-                    tick.setAttribute("class", "tick");
-                    tick.style.opacity = 1;
-                    tick.style.transform = `translateX(${tickPos}px)`;
-                    document.getElementById("URbar").appendChild(tick);
-
-
-                    if (currentErrorValue >= -(error_h300) && currentErrorValue <= error_h300) {
-                        tick.style.backgroundColor = 'rgba(134, 211, 255, 0.5)';
-                    }
-                    else if (currentErrorValue >= -(error_h100) && currentErrorValue <= error_h100) {
-                        tick.style.backgroundColor = 'rgba(136, 255, 134, 0.5)';
-                    }
-                    else {
-                        tick.style.backgroundColor = 'rgba(255, 213, 134, 0.5)';
-                    }
-                    function fade() {
-                        tick.style.opacity = 0;
-                    }
-
-                    function remove() {
-                        document.getElementById("URbar").removeChild(tick);
-                    }
-                    setTimeout(fade, 500);
-                    setTimeout(remove, 3500);
-                }
-            }
-        }
-    }
-
     URIndex.innerHTML = data.play.unstableRate;
     h100.innerHTML = data.play.hits[100];
     h50.innerHTML = data.play.hits[50];
@@ -719,8 +723,6 @@ socket.onmessage = (event) => {
 
     starsCurrent.innerHTML = data.beatmap.stats.stars.live;
     animation.starsCurrent.update(starsCurrent.innerHTML);
-
-    let cache_beatmap = '';
     
     if (cache_beatmap !== data.beatmap.checksum) {
         cache_beatmap == data.beatmap.checksum;
@@ -1317,7 +1319,17 @@ async function getMapScores(beatmapID) {
         console.error(error);
     }
 }
-
+async function accIffc(acc, mods) {
+    try {
+        let accIffc = null
+        const data = await axios.get(`http://127.0.0.1:24050/api/calculate/pp?acc=${acc}&mods=${mods}`).then((response) => {
+            accIffc = response.data
+        });
+        tempPPfc = accIffc.performance.pp.toFixed(0)
+        } catch (error) {
+            console.error(error);
+        }
+}
 async function postDNTT(beatmap_id) {
     try {
         const data = await axios.get(`https://phubahosi.vercel.app/api/beatmap/${beatmap_id}/global`);
